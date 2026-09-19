@@ -1,0 +1,6 @@
+{
+  "name": "TrustChain",
+  "description": "Privacy-Preserving Reusable KYC & Digital Identity Platform",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

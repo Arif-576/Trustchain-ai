@@ -1,0 +1,723 @@
+{
+  "users": [
+    {
+      "id": "usr-midhun-01",
+      "name": "Midhun",
+      "email": "midhun@trustchain.id",
+      "phone": "+91 98765 43210",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      "role": "customer",
+      "kycStatus": "verified",
+      "age": 24,
+      "dob": "2002-04-18",
+      "aadhaarMasked": "XXXX-XXXX-8921",
+      "panMasked": "ABCDE****F",
+      "addressState": "Tamil Nadu, India",
+      "privacyScore": 94,
+      "dataMinimizationScore": 96,
+      "createdAt": "2026-01-15T10:00:00.000Z",
+      "passwordHash": "e0e1910c09701a51ee4b17d59d0df1f151b4a330eebabcaff56089b54b915f06",
+      "passkeyEnrolled": true
+    },
+    {
+      "id": "usr-arif-02",
+      "name": "Mohamed Arif A",
+      "email": "arif@trustchain.id",
+      "phone": "+91 98765 43211",
+      "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80",
+      "role": "customer",
+      "kycStatus": "verified",
+      "age": 25,
+      "dob": "2001-08-14",
+      "aadhaarMasked": "XXXX-XXXX-4532",
+      "panMasked": "BKAPM****K",
+      "addressState": "Tamil Nadu, India",
+      "privacyScore": 92,
+      "dataMinimizationScore": 94,
+      "createdAt": "2026-01-10T08:30:00.000Z",
+      "passwordHash": "e0e1910c09701a51ee4b17d59d0df1f151b4a330eebabcaff56089b54b915f06",
+      "passkeyEnrolled": true
+    },
+    {
+      "id": "usr-kishore-03",
+      "name": "Kishore",
+      "email": "kishore@trustchain.id",
+      "phone": "+91 98765 43212",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      "role": "customer",
+      "kycStatus": "verified",
+      "age": 23,
+      "dob": "2003-11-05",
+      "aadhaarMasked": "XXXX-XXXX-1934",
+      "panMasked": "CJDFE****L",
+      "addressState": "Karnataka, India",
+      "privacyScore": 89,
+      "dataMinimizationScore": 91,
+      "createdAt": "2026-02-01T14:15:00.000Z",
+      "passwordHash": "e0e1910c09701a51ee4b17d59d0df1f151b4a330eebabcaff56089b54b915f06",
+      "passkeyEnrolled": true
+    },
+    {
+      "id": "usr-krishnesh-04",
+      "name": "Krishnesh",
+      "email": "krishnesh@trustchain.id",
+      "phone": "+91 98765 43213",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+      "role": "customer",
+      "kycStatus": "verified",
+      "age": 26,
+      "dob": "2000-02-28",
+      "aadhaarMasked": "XXXX-XXXX-7712",
+      "panMasked": "AALPK****Z",
+      "addressState": "Tamil Nadu, India",
+      "privacyScore": 95,
+      "dataMinimizationScore": 98,
+      "createdAt": "2026-01-05T09:00:00.000Z",
+      "passwordHash": "e0e1910c09701a51ee4b17d59d0df1f151b4a330eebabcaff56089b54b915f06",
+      "passkeyEnrolled": true
+    }
+  ],
+  "bankStaff": [
+    {
+      "id": "staff-mgr-01",
+      "bankId": "TB-001",
+      "employeeId": "MGR-1001",
+      "name": "Vikram Malhotra",
+      "email": "v.malhotra@trustbank.in",
+      "bankName": "TrustBank Institutional Operations (TB-001)",
+      "role": "bank_staff",
+      "designation": "Chief Verification Officer & Bank Manager",
+      "passwordHash": "69c422488dcf0d2d1ff9f074b0c52eaba6f7e8e8fc4cb44dd20d200167d7ef20"
+    },
+    {
+      "id": "staff-01",
+      "bankId": "BANK-HDFC-901",
+      "employeeId": "EMP-4082",
+      "name": "Rajesh Kumar",
+      "email": "rajesh.k@hdfc-identity.com",
+      "bankName": "HDFC Trust Banking & Credit",
+      "role": "bank_staff",
+      "designation": "Senior Credit & Verification Manager",
+      "passwordHash": "69c422488dcf0d2d1ff9f074b0c52eaba6f7e8e8fc4cb44dd20d200167d7ef20"
+    },
+    {
+      "id": "staff-1789817965341-861",
+      "bankId": "BANK-HDFC-901",
+      "employeeId": "EMP-9901",
+      "name": "Priya Sharma",
+      "email": "priya.sharma@hdfc-identity.com",
+      "bankName": "HDFC Trust Banking & Credit",
+      "role": "bank_staff",
+      "designation": "Lead Verification Officer",
+      "passwordHash": "9f0373806b3d8e486bf39d63bef01481d721c41d43ccb97745efdbad2552e43f"
+    }
+  ],
+  "credentials": [
+    {
+      "id": "cred-usr-midhun-01",
+      "userId": "usr-midhun-01",
+      "credentialType": "Reusable SSI Government KYC Passport",
+      "issuer": "TrustChain Digital Trust Authority (Govt. of India e-Sign)",
+      "issueDate": "2026-01-10",
+      "expiryDate": "2029-01-10",
+      "status": "valid",
+      "credentialHash": "835f589480d9bc3dcafea05ea26dd06f78f897bd9f1d08f027df7fddfcf205ca",
+      "txHash": "0xb470bacb43825de3265b78b9dc1c192a585684cc66852e85f5f2eb75e9d85c22",
+      "claims": {
+        "ageEligibility": true,
+        "identityVerified": true,
+        "addressVerified": true,
+        "incomeEligible": true
+      }
+    },
+    {
+      "id": "cred-usr-arif-02",
+      "userId": "usr-arif-02",
+      "credentialType": "Reusable SSI Government KYC Passport",
+      "issuer": "TrustChain Digital Trust Authority (Govt. of India e-Sign)",
+      "issueDate": "2026-01-10",
+      "expiryDate": "2029-01-10",
+      "status": "valid",
+      "credentialHash": "18cbf2ee56fac91fa3761f4c9bd57ee166e5bd2c8aac3ce36f708bf87d4a9ec2",
+      "txHash": "0xe7e91b77dbefe6b0f3dde3cadd9b5a6cdb85a2a58ab2472b799dd44d7e1d9131",
+      "claims": {
+        "ageEligibility": true,
+        "identityVerified": true,
+        "addressVerified": true,
+        "incomeEligible": true
+      }
+    },
+    {
+      "id": "cred-usr-kishore-03",
+      "userId": "usr-kishore-03",
+      "credentialType": "Reusable SSI Government KYC Passport",
+      "issuer": "TrustChain Digital Trust Authority (Govt. of India e-Sign)",
+      "issueDate": "2026-01-10",
+      "expiryDate": "2029-01-10",
+      "status": "valid",
+      "credentialHash": "1f85bde5d5e0a424e777bdbcc2a1efe245bc9f89f8292c5114e4440c53487f6a",
+      "txHash": "0xb0bef53e965084e953227030ef8c372473f86bb1ab4687ce0b049b6f2916b427",
+      "claims": {
+        "ageEligibility": true,
+        "identityVerified": true,
+        "addressVerified": true,
+        "incomeEligible": true
+      }
+    },
+    {
+      "id": "cred-usr-krishnesh-04",
+      "userId": "usr-krishnesh-04",
+      "credentialType": "Reusable SSI Government KYC Passport",
+      "issuer": "TrustChain Digital Trust Authority (Govt. of India e-Sign)",
+      "issueDate": "2026-01-10",
+      "expiryDate": "2029-01-10",
+      "status": "valid",
+      "credentialHash": "033d50c5e27b9ce705f8e56898e8583900d911913a6b7f8515b3e7c5bc10c86b",
+      "txHash": "0xd5a6d144bb31edf68486794c2c6d33ee734850dea60bd8b70f1e8846d81638e2",
+      "claims": {
+        "ageEligibility": true,
+        "identityVerified": true,
+        "addressVerified": true,
+        "incomeEligible": true
+      }
+    }
+  ],
+  "verificationRequests": [
+    {
+      "id": "req-01",
+      "userId": "usr-arif-02",
+      "bankId": "BANK-HDFC-901",
+      "bankName": "HDFC Trust Banking",
+      "purpose": "Verification for Pre-Approved Personal Credit Facility",
+      "requestedAttributes": [
+        "KYC Verified Claim",
+        "Age Above 18 (ZKP)",
+        "State Residency Claim"
+      ],
+      "disclosedAttributes": [
+        "KYC Verified Claim",
+        "Age Above 18 (ZKP)"
+      ],
+      "requestedProof": "Age >= 18 & KYC Authenticated",
+      "riskScore": 18,
+      "riskLevel": "LOW",
+      "riskRecommendation": "Safe to approve. Only zero-knowledge claim required.",
+      "status": "pending",
+      "createdAt": "2026-09-10T11:20:00.000Z",
+      "expiresAt": "2026-09-20T23:59:59.000Z"
+    },
+    {
+      "id": "req-02",
+      "userId": "usr-midhun-01",
+      "bankId": "BANK-HDFC-901",
+      "bankName": "Axis Prime Wealth",
+      "purpose": "Digital Brokerage & Investment Account KYC",
+      "requestedAttributes": [
+        "KYC Verified Claim",
+        "Age Above 18 (ZKP)"
+      ],
+      "disclosedAttributes": [
+        "KYC Verified Claim",
+        "Age Above 18 (ZKP)"
+      ],
+      "requestedProof": "Age >= 18",
+      "riskScore": 22,
+      "riskLevel": "LOW",
+      "riskRecommendation": "Minimal data disclosure needed. Safe.",
+      "status": "pending",
+      "createdAt": "2026-09-11T09:15:00.000Z",
+      "expiresAt": "2026-09-25T23:59:59.000Z"
+    },
+    {
+      "id": "req-03",
+      "userId": "usr-krishnesh-04",
+      "bankId": "BANK-HDFC-901",
+      "bankName": "SBI Agri-Credit Trust",
+      "purpose": "Kisan Agricultural Infrastructure Loan",
+      "requestedAttributes": [
+        "KYC Verified Claim",
+        "State Residency Claim",
+        "Income Eligibility Claim"
+      ],
+      "requestedProof": "KYC Verified & State Residency",
+      "riskScore": 15,
+      "riskLevel": "LOW",
+      "riskRecommendation": "Verified institutional public sector bank.",
+      "status": "pending",
+      "createdAt": "2026-09-12T07:45:00.000Z",
+      "expiresAt": "2026-09-22T23:59:59.000Z"
+    }
+  ],
+  "proofs": [
+    {
+      "id": "zkp-proof-01",
+      "userId": "usr-arif-02",
+      "requestId": "req-01",
+      "claimType": "age_over_18",
+      "requirement": "Predicate: age >= 18",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzk7a9e14c382f9d50b71e843fa2948b301",
+      "txHash": "0x9482bf7a83d09e3a7c6419d854e76a0b91d84f",
+      "blockNumber": 1845210,
+      "verifier": "HDFC Trust Banking",
+      "createdAt": "2026-09-10T12:00:00.000Z",
+      "timestamp": "2026-09-10T12:00:00.000Z"
+    },
+    {
+      "id": "zkp-proof-02",
+      "userId": "usr-krishnesh-04",
+      "claimType": "residency_state",
+      "requirement": "Predicate: state == \"Tamil Nadu\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzk5841bc90aef4316d28905b7610fa789c",
+      "txHash": "0x43890fe81b29a0c4765d183fa89b37a4e69d2f",
+      "blockNumber": 1845212,
+      "verifier": "SBI Agri-Credit Trust",
+      "createdAt": "2026-09-11T16:30:00.000Z",
+      "timestamp": "2026-09-11T16:30:00.000Z"
+    }
+  ],
+  "consents": [
+    {
+      "id": "consent-01",
+      "userId": "usr-arif-02",
+      "organization": "HDFC Bank Ltd.",
+      "purpose": "Account Opening & KYC Verification",
+      "requestedData": [
+        "Age Predicate Proof",
+        "Identity Authenticated Hash"
+      ],
+      "approvedDate": "2026-08-20",
+      "expiryDate": "2027-08-20",
+      "status": "active",
+      "txHash": "0xb1ea3c7e1a8f533a179100a54eebc101b919175a467b6c230b797c337ca38062"
+    },
+    {
+      "id": "consent-02",
+      "userId": "usr-arif-02",
+      "organization": "Zerodha Broking Limited",
+      "purpose": "Demat Account Creation",
+      "requestedData": [
+        "PAN Masked Proof",
+        "Residency Claim"
+      ],
+      "approvedDate": "2026-07-15",
+      "expiryDate": "2027-07-15",
+      "status": "active",
+      "txHash": "0x051ca035488fd19d2463424b8391c951c49fcd9e5c22338f1a188018c87106c3"
+    },
+    {
+      "id": "consent-03",
+      "userId": "usr-midhun-01",
+      "organization": "ICICI Securities",
+      "purpose": "Trading Wallet Verification",
+      "requestedData": [
+        "Age Predicate Proof",
+        "KYC Status"
+      ],
+      "approvedDate": "2026-08-01",
+      "expiryDate": "2027-08-01",
+      "status": "active",
+      "txHash": "0xe989d182952a20740c4b84ffe539e2d86a6ddd1389eee935afd3dc1494da1cf2"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "audit-1789817965341",
+      "timestamp": "2026-09-19T11:39:25.341Z",
+      "event": "BANK_STAFF_ACCOUNT_CREATED",
+      "actor": "EMP-9901 (BANK-HDFC-901)",
+      "organization": "HDFC Trust Banking & Credit",
+      "action": "New institutional officer account created for Priya Sharma (Lead Verification Officer)",
+      "txHash": "0x78ff647d254492195a93016c2cd10acbd7739370120f7a2cacf9a84815423519",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789817962398",
+      "timestamp": "2026-09-19T11:39:22.398Z",
+      "event": "BANK_STAFF_GOOGLE_LOGIN",
+      "actor": "EMP-4082 (BANK-HDFC-901)",
+      "organization": "HDFC Trust Banking & Credit",
+      "action": "Institutional Google authentication for Rajesh Kumar (rajesh.k@hdfc-identity.com)",
+      "txHash": "0xe90763006897d941b263b026518b27f6c675472842d86d1ff1e39ca741b69e8d",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789486630292",
+      "timestamp": "2026-09-15T15:37:10.292Z",
+      "event": "DEVICE_PASSKEY_AUTHENTICATED",
+      "actor": "Kishore",
+      "organization": "TrustChain WebAuthn Enclave",
+      "action": "Hardware passkey challenge confirmed. Identity wallet unlocked.",
+      "txHash": "0x0424c553a0cc24d8c008ef0637ae446ef9f2d01ddf2a800799feb520b684b365",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789486625519",
+      "timestamp": "2026-09-15T15:37:05.519Z",
+      "event": "FACE_LIVENESS_VERIFIED",
+      "actor": "Kishore",
+      "organization": "Client Device Enclave",
+      "action": "Live face liveness and anti-spoofing validated locally in browser.",
+      "txHash": "0x6ce9a572522c13352c5637cfc97a5411d55aac7266101c7b1f8eb202cc5c720d",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789486264395",
+      "timestamp": "2026-09-15T15:31:04.395Z",
+      "event": "DEVICE_PASSKEY_AUTHENTICATED",
+      "actor": "Midhun",
+      "organization": "TrustChain WebAuthn Enclave",
+      "action": "Hardware passkey challenge confirmed. Identity wallet unlocked.",
+      "txHash": "0xc365d917577152c4ec5431e9135dea8321f0f92357cd698f43e1fb33470bff99",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789486252839",
+      "timestamp": "2026-09-15T15:30:52.839Z",
+      "event": "FACE_LIVENESS_VERIFIED",
+      "actor": "Midhun",
+      "organization": "Client Device Enclave",
+      "action": "Live face liveness and anti-spoofing validated locally in browser.",
+      "txHash": "0x09ed8e65279071c5a27507892e4eb9c724121e2ff00218f23a62b13872e0459d",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789485980718",
+      "timestamp": "2026-09-15T15:26:20.717Z",
+      "event": "SECURITY_PIN_AUTHENTICATED",
+      "actor": "Mohamed Arif A",
+      "organization": "Hardware PIN Enclave",
+      "action": "Citizen authenticated via secure cryptographic device PIN.",
+      "txHash": "0xd55ce8cfdbff01e488e8c468739e85d93ddfd9da4dfb6d0812ca1131dc23ba69",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789485850132",
+      "timestamp": "2026-09-15T15:24:10.132Z",
+      "event": "WEBAUTHN_BIOMETRIC_SIGNIN",
+      "actor": "Mohamed Arif A",
+      "organization": "WebAuthn Sovereign Enclave",
+      "action": "Citizen signed in via device biometric authentication (WebAuthn FIDO2 Face Recognition).",
+      "txHash": "0x62b926f7e7377cabfeb2fe78f7fb2ae6e332c8b926ff5ace5296da4ffb4348b9",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789485679232",
+      "timestamp": "2026-09-15T15:21:19.232Z",
+      "event": "BIOMETRIC_PASSKEY_REGISTERED",
+      "actor": "Mohamed Arif A",
+      "organization": "WebAuthn / FIDO2 Enclave",
+      "action": "New biometric passkey registered and anchored on blockchain ledger: FIDO2 Hardware Biometric Enclave",
+      "txHash": "0x3427d8f2779b10e5dfed2befd4e54392e766fe1af09553d926ba39241afe4eea",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789485666487",
+      "timestamp": "2026-09-15T15:21:06.487Z",
+      "event": "FACE_LIVENESS_VERIFIED",
+      "actor": "Mohamed Arif A",
+      "organization": "Client Device Enclave",
+      "action": "Live face liveness and anti-spoofing validated locally in browser.",
+      "txHash": "0x9f85f650b75441fa09a7f043425738ab18cdbf9ee5bd884afbaac99adfd16e7d",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-01",
+      "timestamp": "2026-01-10T08:30:00.000Z",
+      "event": "IDENTITY_CREDENTIAL_ISSUED",
+      "actor": "TrustChain Sovereign Authority",
+      "organization": "TrustChain Protocol",
+      "action": "Reusable SSI Credential anchored on-chain with SHA-256 root hash",
+      "txHash": "0x5ce2c463d9323ca258a755f98f74122fde85cabce145aa808d0e082fb50e4c39",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-02",
+      "timestamp": "2026-09-10T12:00:00.000Z",
+      "event": "ZKP_PROOF_GENERATED",
+      "actor": "Mohamed Arif A",
+      "organization": "HDFC Trust Banking",
+      "action": "Zero-Knowledge Proof verified (Predicate: age >= 18). Raw DOB kept confidential.",
+      "proofId": "zkp-proof-01",
+      "txHash": "0x9482bf7a83d09e3a7c6419d854e76a0b91d84f",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-03",
+      "timestamp": "2026-09-11T14:22:00.000Z",
+      "event": "DEVICE_PASSKEY_VERIFIED",
+      "actor": "Mohamed Arif A",
+      "organization": "TrustChain Authenticator",
+      "action": "Biometric passkey verified on client device via WebAuthn platform authenticator",
+      "txHash": "0x0b48a2a1f0e6c49f695819b0b33bcc0cf49722b4214b974994955998187b8b81",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-04",
+      "timestamp": "2026-09-12T07:45:00.000Z",
+      "event": "VERIFICATION_REQUEST_RECEIVED",
+      "actor": "SBI Agri-Credit Trust",
+      "organization": "TrustChain Protocol",
+      "action": "Bank verification request generated with selective disclosure parameters",
+      "txHash": "0x12ccc9ae19d24f87d3adf72a11522584fa61e909a3f9a4ee21795c15a48fa2fe",
+      "status": "recorded"
+    }
+  ],
+  "loans": [
+    {
+      "id": "loan-agri-01",
+      "userId": "usr-arif-02",
+      "loanType": "agricultural",
+      "title": "Kisan Agricultural Credit Facility",
+      "amount": "₹ 5,00,000",
+      "tenureMonths": 24,
+      "interestRate": "4.0% p.a. (Subsidized)",
+      "status": "eligible",
+      "requiredProof": "State Residency + Age > 18 ZKP"
+    },
+    {
+      "id": "loan-personal-02",
+      "userId": "usr-arif-02",
+      "loanType": "personal",
+      "title": "Instant Personal Digital Facility",
+      "amount": "₹ 3,50,000",
+      "tenureMonths": 36,
+      "interestRate": "9.8% p.a.",
+      "status": "eligible",
+      "requiredProof": "KYC Verified + Creditworthiness ZKP"
+    },
+    {
+      "id": "loan-edu-03",
+      "userId": "usr-arif-02",
+      "loanType": "education",
+      "title": "Higher Education Special Support",
+      "amount": "₹ 15,00,000",
+      "tenureMonths": 60,
+      "interestRate": "6.5% p.a.",
+      "status": "eligible",
+      "requiredProof": "Age > 18 + Academic Admission Proof"
+    },
+    {
+      "id": "loan-msme-04",
+      "userId": "usr-arif-02",
+      "loanType": "business",
+      "title": "MSME Business Growth Facility",
+      "amount": "₹ 25,00,000",
+      "tenureMonths": 48,
+      "interestRate": "8.2% p.a.",
+      "status": "eligible",
+      "requiredProof": "Business Registration Claim + KYC ZKP"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-01",
+      "userId": "usr-arif-02",
+      "title": "New Verification Request",
+      "message": "HDFC Trust Banking has requested selective identity proof for pre-approved credit.",
+      "type": "info",
+      "timestamp": "2026-09-12T08:00:00.000Z",
+      "read": false
+    },
+    {
+      "id": "notif-02",
+      "userId": "usr-arif-02",
+      "title": "Biometric Authenticator Active",
+      "message": "Your device passkey is active and protecting your private identity wallet.",
+      "type": "success",
+      "timestamp": "2026-09-11T14:22:00.000Z",
+      "read": true
+    }
+  ],
+  "qrTokens": [],
+  "passwordResetCodes": [],
+  "passkeys": [
+    {
+      "id": "passkey-1789485679232",
+      "userId": "usr-arif-02",
+      "deviceName": "FIDO2 Hardware Biometric Enclave",
+      "authenticatorType": "TouchID",
+      "credentialId": "fido2-mu2tkigu",
+      "publicKeyHash": "0x02d41c538c271a6cfaab8448090b45cf3e97e04ddbc2db4be4345cbabd26650b",
+      "createdAt": "2026-09-15T15:21:19.232Z",
+      "status": "active",
+      "txHash": "0x3427d8f2779b10e5dfed2befd4e54392e766fe1af09553d926ba39241afe4eea",
+      "blockNumber": 1845211
+    },
+    {
+      "id": "passkey-usr-arif-01",
+      "userId": "usr-arif-02",
+      "deviceName": "MacBook Pro / Touch ID Secure Enclave",
+      "authenticatorType": "TouchID",
+      "credentialId": "cred-touchid-89a1f0",
+      "publicKeyHash": "0x8f2a994c6e1180d73a7d18bc34109e",
+      "createdAt": "2026-02-10T10:00:00.000Z",
+      "status": "active",
+      "txHash": "0x71bca489e13a90ef5502c398271a01c",
+      "blockNumber": 1049281
+    }
+  ],
+  "bankDisbursals": [
+    {
+      "id": "disb-01",
+      "loanId": "loan-agri-01",
+      "customerId": "usr-arif-02",
+      "customerName": "Mohamed Arif A",
+      "facility": "Kisan Zero-Disclosure Agricultural Credit",
+      "amount": "₹ 5,00,000",
+      "disbursedAt": "2026-09-10T11:45:00.000Z",
+      "txHash": "0x39a0c7104b2098eefca7819024c0091",
+      "officerName": "Rajesh Kumar (Senior Credit Officer)",
+      "status": "disbursed"
+    }
+  ],
+  "bankResetCodes": [],
+  "supportCases": [
+    {
+      "id": "case-01",
+      "ticketNumber": "TC-8921",
+      "customerId": "usr-arif-02",
+      "customerName": "Mohamed Arif A",
+      "caseType": "Identity Verification",
+      "priority": "High",
+      "status": "In Progress",
+      "assignedOfficer": "Vikram Malhotra (MGR-1001)",
+      "subject": "In-person ZKP Age Predicate clearance for Agri Credit facility",
+      "notes": [
+        {
+          "id": "note-01",
+          "author": "Vikram Malhotra",
+          "text": "Applicant presented cryptographic QR. Zero-knowledge proof verified age >= 18 without disclosing date of birth.",
+          "timestamp": "2026-09-12T10:15:00.000Z"
+        }
+      ],
+      "createdAt": "2026-09-12T09:30:00.000Z",
+      "updatedAt": "2026-09-12T10:15:00.000Z"
+    },
+    {
+      "id": "case-02",
+      "ticketNumber": "TC-8922",
+      "customerId": "usr-midhun-01",
+      "customerName": "Midhun",
+      "caseType": "KYC Assistance",
+      "priority": "Medium",
+      "status": "Waiting for Customer",
+      "assignedOfficer": "Vikram Malhotra (MGR-1001)",
+      "subject": "Residency jurisdiction claim refresh for commercial facility",
+      "notes": [
+        {
+          "id": "note-02",
+          "author": "Vikram Malhotra",
+          "text": "Dispatched institutional verification request to citizen mobile enclave for state residency predicate.",
+          "timestamp": "2026-09-11T14:00:00.000Z"
+        }
+      ],
+      "createdAt": "2026-09-11T13:45:00.000Z",
+      "updatedAt": "2026-09-11T14:00:00.000Z",
+      "verificationRequested": true
+    },
+    {
+      "id": "case-03",
+      "ticketNumber": "TC-8923",
+      "customerId": "usr-krishnesh-04",
+      "customerName": "Krishnesh",
+      "caseType": "Loan Assistance",
+      "priority": "Low",
+      "status": "Open",
+      "assignedOfficer": "Vikram Malhotra (MGR-1001)",
+      "subject": "Pre-approved MSME Digital Enterprise facility review",
+      "notes": [
+        {
+          "id": "note-03",
+          "author": "System Bot",
+          "text": "Case initialized automatically upon loan inquiry.",
+          "timestamp": "2026-09-12T16:20:00.000Z"
+        }
+      ],
+      "createdAt": "2026-09-12T16:20:00.000Z",
+      "updatedAt": "2026-09-12T16:20:00.000Z"
+    },
+    {
+      "id": "case-04",
+      "ticketNumber": "TC-8924",
+      "customerId": "usr-kishore-03",
+      "customerName": "Kishore",
+      "caseType": "Proof Verification",
+      "priority": "Urgent",
+      "status": "Escalated",
+      "assignedOfficer": "Vikram Malhotra (MGR-1001)",
+      "subject": "Cross-border student identity proof verification",
+      "notes": [
+        {
+          "id": "note-04",
+          "author": "Vikram Malhotra",
+          "text": "Multi-jurisdiction university verification required. Escalated to Senior Compliance Operations.",
+          "timestamp": "2026-09-10T11:00:00.000Z"
+        }
+      ],
+      "createdAt": "2026-09-10T10:30:00.000Z",
+      "updatedAt": "2026-09-10T11:00:00.000Z"
+    }
+  ],
+  "fraudAlerts": [
+    {
+      "id": "fa-01",
+      "type": "Unusual verification attempt",
+      "severity": "HIGH",
+      "customerId": "usr-kishore-03",
+      "customerName": "Kishore",
+      "details": "Geographically disparate verification attempt originating from foreign AS network within 15 minutes of domestic login.",
+      "deviceFingerprint": "Linux x86_64 / Chrome 128 (IP: 194.26.29.11)",
+      "ipAddress": "194.26.29.11",
+      "timestamp": "25 mins ago",
+      "status": "Investigating"
+    },
+    {
+      "id": "fa-02",
+      "type": "Repeated proof requests",
+      "severity": "MEDIUM",
+      "customerId": "usr-midhun-01",
+      "customerName": "Midhun",
+      "details": "Automated burst of 6 credential verification challenges within 40 seconds from external aggregator IP.",
+      "deviceFingerprint": "Aggregator Service / Node.js HTTP (IP: 13.235.44.12)",
+      "ipAddress": "13.235.44.12",
+      "timestamp": "1 hour ago",
+      "status": "Active"
+    },
+    {
+      "id": "fa-03",
+      "type": "High-risk device",
+      "severity": "CRITICAL",
+      "details": "Attestation failure: Hardware root of trust missing. Rooted environment / modified Android bootloader detected.",
+      "deviceFingerprint": "Android Emulator ARM64 (Device ID: EMUL-8912)",
+      "ipAddress": "103.211.55.8",
+      "timestamp": "3 hours ago",
+      "status": "Active"
+    },
+    {
+      "id": "fa-04",
+      "type": "Multiple failed biometric attempts",
+      "severity": "HIGH",
+      "customerId": "usr-krishnesh-04",
+      "customerName": "Krishnesh",
+      "details": "3 consecutive camera liveness failures. Optical anti-spoofing algorithm flagged non-natural depth consistency.",
+      "deviceFingerprint": "Safari Mobile / iOS 17.1 (iPhone 14)",
+      "ipAddress": "49.207.181.90",
+      "timestamp": "Yesterday",
+      "status": "Customer Verification Requested"
+    },
+    {
+      "id": "fa-05",
+      "type": "Suspicious request pattern",
+      "severity": "MEDIUM",
+      "details": "Cluster of 7 rapid personal credit inquiries with oscillating proof disclosures across multiple partner bank portals.",
+      "deviceFingerprint": "Cross-Tenant Cluster IP 117.201.8.44",
+      "ipAddress": "117.201.8.44",
+      "timestamp": "Yesterday",
+      "status": "Active"
+    }
+  ]
+}
