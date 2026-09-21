@@ -11,6 +11,7 @@ import {
   Radio,
   Building2,
   Lock,
+  AlertTriangle,
 } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { api } from '../../services/api';
@@ -34,11 +35,13 @@ export const QRVerificationTab: React.FC<QRVerificationTabProps> = ({ user }) =>
   const [isVerified, setIsVerified] = useState(false);
   const [verifiedBy, setVerifiedBy] = useState<string | null>(null);
   const [verifiedTime, setVerifiedTime] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
 
   const generateNewToken = async () => {
     setLoading(true);
     setIsVerified(false);
     setVerifiedBy(null);
+    setRejectionReason(null);
     try {
       const res = await api.createQRToken('Age >= 18 & KYC Verified Proof', 15);
       setTokenData(res);
@@ -74,43 +77,76 @@ export const QRVerificationTab: React.FC<QRVerificationTabProps> = ({ user }) =>
     generateNewToken();
   }, [user.id]);
 
-  // Real-time synchronization listener
+  // Real-time synchronization listener with strict customer account isolation
   useEffect(() => {
     const handleSync = (e: any) => {
       const detail = e.detail;
-      if (detail && (!detail.token || detail.token === tokenData?.token || detail.customerName === user.name)) {
-        setIsVerified(true);
-        setVerifiedBy(detail.bankName || 'HDFC Institutional Trust Hub');
-        setVerifiedTime(new Date().toLocaleTimeString());
+      if (!detail) return;
+      const isForThisUser =
+        (detail.userId && detail.userId === user.id) ||
+        (detail.token && tokenData && detail.token === tokenData.token) ||
+        (detail.customerName && detail.customerName === user.name);
+
+      if (isForThisUser) {
+        if (detail.verified) {
+          setIsVerified(true);
+          setRejectionReason(null);
+          setVerifiedBy(detail.bankName || 'HDFC Institutional Trust Hub');
+          setVerifiedTime(new Date().toLocaleTimeString());
+        } else if (detail.rejected) {
+          setRejectionReason(detail.reason || 'Verification rejected');
+        }
+      }
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'trustchain_user_verified' && e.newValue === 'true') {
+        const verifiedUserId =
+          localStorage.getItem('trustchain_qr_verified_userId') ||
+          localStorage.getItem('trustchain_qr_verified_user_id');
+        const verifiedToken = localStorage.getItem('trustchain_qr_verified_token');
+        if (
+          (verifiedUserId && verifiedUserId === user.id) ||
+          (verifiedToken && tokenData && verifiedToken === tokenData.token)
+        ) {
+          setIsVerified(true);
+          setRejectionReason(null);
+          setVerifiedBy('HDFC Institutional Trust Hub');
+          setVerifiedTime(new Date().toLocaleTimeString());
+        }
       }
     };
 
     window.addEventListener('trustchain_verification_updated', handleSync);
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'trustchain_user_verified' && e.newValue === 'true') {
-        setIsVerified(true);
-        setVerifiedBy('HDFC Institutional Trust Hub');
-        setVerifiedTime(new Date().toLocaleTimeString());
-      }
-    });
+    window.addEventListener('storage', handleStorage);
 
     return () => {
       window.removeEventListener('trustchain_verification_updated', handleSync);
+      window.removeEventListener('storage', handleStorage);
     };
-  }, [tokenData, user.name]);
+  }, [tokenData, user.id, user.name]);
 
-  // Polling backend status for this token
+  // Polling backend status for this specific customer token
   useEffect(() => {
     if (!tokenData?.token || isVerified) return;
 
     const interval = setInterval(async () => {
       try {
         const status = await api.getQRTokenStatus(tokenData.token);
-        if (status && status.verified) {
-          setIsVerified(true);
-          setVerifiedBy('HDFC Institutional Trust Hub');
-          setVerifiedTime(new Date().toLocaleTimeString());
-          clearInterval(interval);
+        if (status) {
+          if (status.verified || status.status === 'used') {
+            setIsVerified(true);
+            setRejectionReason(null);
+            setVerifiedBy(status.verifiedBy || 'HDFC Institutional Trust Hub');
+            setVerifiedTime(
+              status.verifiedAt
+                ? new Date(status.verifiedAt).toLocaleTimeString()
+                : new Date().toLocaleTimeString()
+            );
+            clearInterval(interval);
+          } else if (status.status === 'rejected') {
+            setRejectionReason(status.rejectionReason || 'Verification rejected');
+          }
         }
       } catch (e) {
         // ignore polling error
@@ -156,6 +192,32 @@ export const QRVerificationTab: React.FC<QRVerificationTabProps> = ({ user }) =>
                 <span className="text-xs text-slate-500 font-semibold">
                   {isTamil ? 'குறியாக்கம் செய்யப்படுகிறது...' : isHindi ? 'टोकन उत्पन्न हो रहा है...' : 'Generating Cryptographic Token...'}
                 </span>
+              </div>
+            ) : isVerified ? (
+              <div className="w-64 h-64 flex flex-col items-center justify-center space-y-3 bg-emerald-50/80 rounded-2xl p-4 border border-emerald-200 text-center animate-in zoom-in-95">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-200">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-emerald-900 text-sm">
+                    {isTamil ? 'QR சரிபார்க்கப்பட்டது' : isHindi ? 'क्यूआर सत्यापित' : 'QR Verified & Used'}
+                  </h4>
+                  <p className="text-[11px] text-emerald-700 mt-1 max-w-[210px] leading-relaxed">
+                    {isTamil
+                      ? 'இந்த ஒருமுறை பயன்படுத்தும் டோக்கன் வங்கி மூலம் வெற்றிகரமாக சரிபார்க்கப்பட்டு பயன்படுத்தப்பட்டது.'
+                      : isHindi
+                      ? 'यह एकल-उपयोग टोकन बैंक द्वारा सफलतापूर्वक सत्यापित और उपयोग किया जा चुका है।'
+                      : 'This single-use QR token has been successfully verified and redeemed.'}
+                  </p>
+                </div>
+                <button
+                  onClick={generateNewToken}
+                  disabled={loading}
+                  className="mt-1 py-2 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>{isTamil ? 'புதிய QR உருவாக்கவும்' : isHindi ? 'नया क्यूआर बनाएं' : 'Generate New QR'}</span>
+                </button>
               </div>
             ) : qrDataUrl ? (
               <img
@@ -287,6 +349,28 @@ export const QRVerificationTab: React.FC<QRVerificationTabProps> = ({ user }) =>
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>State Residency Proven via ZK-Proof</span>
                   </div>
+                </div>
+              </div>
+            ) : rejectionReason ? (
+              <div className="mt-4 p-4 rounded-2xl border bg-rose-50/90 border-rose-200 text-rose-950 animate-in zoom-in-95 space-y-2.5">
+                <div className="flex items-center gap-2 font-bold text-sm text-rose-700">
+                  <AlertTriangle className="w-5 h-5 shrink-0" />
+                  <span>
+                    {isTamil ? 'சரிபார்ப்பு நிராகரிக்கப்பட்டது' : isHindi ? 'सत्यापन अस्वीकृत' : 'Verification Rejected'}
+                  </span>
+                </div>
+                <p className="text-xs text-rose-800 font-medium leading-relaxed">
+                  {rejectionReason}
+                </p>
+                <div className="pt-1">
+                  <button
+                    onClick={generateNewToken}
+                    disabled={loading}
+                    className="py-1.5 px-3 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>{isTamil ? 'புதிய QR உருவாக்கவும்' : isHindi ? 'नया क्यूआर बनाएं' : 'Generate Fresh QR & Retry'}</span>
+                  </button>
                 </div>
               </div>
             ) : (

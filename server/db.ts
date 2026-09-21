@@ -126,6 +126,25 @@ function getInitialData(): DBData {
       passwordHash: defaultPasswordHash,
       passkeyEnrolled: true,
     },
+    {
+      id: 'usr-priya-05',
+      name: 'Priya Sharma',
+      email: 'priya@trustchain.id',
+      phone: '+91 98765 43214',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+      role: 'customer',
+      kycStatus: 'verified',
+      age: 28,
+      dob: '1998-05-20',
+      aadhaarMasked: 'XXXX-XXXX-6631',
+      panMasked: 'BRDPS****M',
+      addressState: 'Maharashtra, India',
+      privacyScore: 96,
+      dataMinimizationScore: 95,
+      createdAt: '2026-01-20T11:00:00.000Z',
+      passwordHash: defaultPasswordHash,
+      passkeyEnrolled: true,
+    },
   ];
 
   const bankStaff: (BankStaff & { passwordHash: string })[] = [
@@ -404,7 +423,92 @@ function getInitialData(): DBData {
     }
   ];
 
-  const qrTokens: QRTokenPayload[] = [];
+  const qrTokens: QRTokenPayload[] = [
+    {
+      token: 'tc_ver_req-01_3dfbefb817c4ed645fa7a98c',
+      requestId: 'req-01',
+      userId: 'usr-arif-02',
+      userName: 'Mohamed Arif A',
+      bankName: 'HDFC Trust Banking',
+      claims: ['Age >= 18 Valid (Groth16 ZKP)', 'Govt. UIDAI e-Sign KYC Active'],
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      status: 'valid',
+      proofId: 'zkp-proof-01',
+      proofHash: '0xzk7a9e14c382f9d50b71e843fa2948b301',
+      txHash: '0x9482bf7a83d09e3a7c6419d854e76a0b91d84f',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      token: 'tkn-9841-mohamed-arif-a-zkp',
+      requestId: 'req-01',
+      userId: 'usr-arif-02',
+      userName: 'Mohamed Arif A',
+      bankName: 'HDFC Trust Banking',
+      claims: ['Age >= 18 Valid (Groth16 ZKP)', 'Govt. UIDAI e-Sign KYC Active'],
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      status: 'valid',
+      proofId: 'zkp-proof-01',
+      proofHash: '0xzk7a9e14c382f9d50b71e843fa2948b301',
+      txHash: '0x9482bf7a83d09e3a7c6419d854e76a0b91d84f',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      token: 'tkn-7219-midhun-s-zkp',
+      requestId: 'req-02',
+      userId: 'usr-midhun-01',
+      userName: 'Midhun',
+      bankName: 'Axis Prime Wealth',
+      claims: ['Age >= 18 Valid (Groth16 ZKP)', 'Govt. UIDAI e-Sign KYC Active'],
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      status: 'valid',
+      proofId: 'zkp-proof-midhun',
+      proofHash: '0xzk7841bc90aef4316d28905b7610fa789c',
+      txHash: '0x3218bf7a83d09e3a7c6419d854e76a0b91d84f',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      token: 'tkn-3382-kishore-zkp',
+      requestId: 'req-03',
+      userId: 'usr-kishore-03',
+      userName: 'Kishore',
+      bankName: 'HDFC Trust Banking',
+      claims: ['Age >= 18 Valid (Groth16 ZKP)', 'Govt. UIDAI e-Sign KYC Active'],
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      status: 'valid',
+      proofId: 'zkp-proof-kishore',
+      proofHash: '0xzk7841bc90aef4316d28905b7610fa789c',
+      txHash: '0x5512bf7a83d09e3a7c6419d854e76a0b91d84f',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      token: 'tc_qr_usr-krishnesh-04_6d4c3cd0be1359d953e8216241a6a4b4',
+      requestId: 'req-04',
+      userId: 'usr-krishnesh-04',
+      userName: 'Krishnesh',
+      bankName: 'SBI Agri-Credit Trust',
+      claims: ['Age >= 18 Valid (Groth16 ZKP)', 'Govt. UIDAI e-Sign KYC Active'],
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      status: 'valid',
+      proofId: 'zkp-proof-02',
+      proofHash: '0xzk5841bc90aef4316d28905b7610fa789c',
+      txHash: '0x43890fe81b29a0c4765d183fa89b37a4e69d2f',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      token: 'tkn-4128-priya-sharma-zkp',
+      requestId: 'req-05',
+      userId: 'usr-priya-05',
+      userName: 'Priya Sharma',
+      bankName: 'HDFC Trust Banking',
+      claims: ['Age >= 18 Valid (Groth16 ZKP)', 'Govt. UIDAI e-Sign KYC Active'],
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      status: 'valid',
+      proofId: 'zkp-proof-priya',
+      proofHash: '0xzk7841bc90aef4316d28905b7610fa789c',
+      txHash: '0x7782bf7a83d09e3a7c6419d854e76a0b91d84f',
+      createdAt: new Date().toISOString(),
+    }
+  ];
   const passwordResetCodes: { contact: string; code: string; expiresAt: number }[] = [];
   const passkeys: BiometricPasskey[] = [
     {
@@ -629,6 +733,20 @@ class Database {
         parsed.supportCases = (parsed.supportCases && parsed.supportCases.length > 0) ? parsed.supportCases : initial.supportCases;
         parsed.fraudAlerts = (parsed.fraudAlerts && parsed.fraudAlerts.length > 0) ? parsed.fraudAlerts : initial.fraudAlerts;
 
+        parsed.qrTokens = parsed.qrTokens || [];
+        initial.qrTokens.forEach((qt: any) => {
+          if (!parsed.qrTokens.some((existing: any) => existing.token === qt.token)) {
+            parsed.qrTokens.push(qt);
+          }
+        });
+        parsed.users = parsed.users || [];
+        // Ensure default users exist
+        initial.users.forEach((u: any) => {
+          if (!parsed.users.some((existing: any) => existing.id === u.id)) {
+            parsed.users.push(u);
+          }
+        });
+
         // Ensure TB-001 is present
         if (!parsed.bankStaff || !parsed.bankStaff.some((s: any) => s.bankId === 'TB-001')) {
           parsed.bankStaff = initial.bankStaff;
@@ -781,10 +899,48 @@ class Database {
     return safeUser;
   }
 
+  public requestUpdatedProofForUser(userId: string): boolean {
+    const user = this.data.users.find(u => u.id === userId);
+    if (!user) return false;
+    user.updatedProofStatus = 'requested';
+    user.updatedProofAt = new Date().toISOString();
+    this.persist();
+    return true;
+  }
+
+  public submitUpdatedProofForUser(userId: string, proofHash: string): boolean {
+    const user = this.data.users.find(u => u.id === userId);
+    if (!user) return false;
+    user.updatedProofStatus = 'submitted';
+    user.updatedProofHash = proofHash;
+    user.updatedProofAt = new Date().toISOString();
+    this.persist();
+    return true;
+  }
+
+  public verifyUpdatedProofForUser(userId: string): boolean {
+    const user = this.data.users.find(u => u.id === userId);
+    if (!user) return false;
+    user.updatedProofStatus = 'verified';
+    user.kycStatus = 'verified';
+    this.persist();
+    return true;
+  }
+
   public updateUserPassword(userId: string, newPass: string) {
     const user = this.data.users.find(u => u.id === userId);
     if (user) {
       user.passwordHash = hashPassword(newPass);
+      this.persist();
+      return true;
+    }
+    return false;
+  }
+
+  public updateUserKyc(userId: string, kycStatus: 'pending' | 'verified' | 'rejected') {
+    const user = this.data.users.find(u => u.id === userId);
+    if (user) {
+      user.kycStatus = kycStatus;
       this.persist();
       return true;
     }
@@ -1085,22 +1241,48 @@ class Database {
 
   // QR Tokens
   public saveQRToken(payload: QRTokenPayload) {
+    this.data.qrTokens = this.data.qrTokens || [];
     this.data.qrTokens.unshift(payload);
     this.persist();
   }
 
   public findQRToken(token: string): QRTokenPayload | undefined {
-    return this.data.qrTokens.find(q => q.token === token);
+    if (!token) return undefined;
+    const cleanToken = token.trim();
+    return (this.data.qrTokens || []).find(
+      q => q.token === cleanToken || q.token.toLowerCase() === cleanToken.toLowerCase()
+    );
   }
 
-  public updateQRTokenStatus(token: string, status: 'valid' | 'used' | 'expired' | 'revoked') {
-    const q = this.data.qrTokens.find(item => item.token === token);
+  public updateQRTokenStatus(
+    token: string,
+    status: 'valid' | 'used' | 'expired' | 'revoked' | 'rejected',
+    extra?: { rejectionReason?: string; verifiedAt?: string; verifiedBy?: string }
+  ) {
+    const q = this.findQRToken(token);
     if (q) {
       q.status = status;
+      if (status === 'used') {
+        delete q.rejectionReason;
+      }
+      if (extra?.rejectionReason !== undefined) q.rejectionReason = extra.rejectionReason;
+      if (extra?.verifiedAt !== undefined) q.verifiedAt = extra.verifiedAt;
+      if (extra?.verifiedBy !== undefined) q.verifiedBy = extra.verifiedBy;
       this.persist();
       return q;
     }
     return null;
+  }
+
+  public getActiveQRTokenForUser(userId: string): QRTokenPayload | undefined {
+    const now = new Date();
+    return (this.data.qrTokens || []).find(
+      q => q.userId === userId && q.status === 'valid' && new Date(q.expiresAt) > now
+    );
+  }
+
+  public getQRTokensForUser(userId: string): QRTokenPayload[] {
+    return (this.data.qrTokens || []).filter(q => q.userId === userId);
   }
 
   // Passkey Management

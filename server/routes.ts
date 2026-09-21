@@ -723,6 +723,7 @@ apiRouter.post('/requests/:id/approve', async (req: Request, res: Response) => {
   }));
 
   const updatedReq = db.updateRequestStatus(requestId, 'approved', disclosedAttributes || request.requestedAttributes);
+  db.submitUpdatedProofForUser(user.id, proof.proofHash);
 
   // Add Consent Record
   const attributesList = disclosedAttributes || request.requestedAttributes || [];
@@ -839,102 +840,195 @@ apiRouter.post('/qr/create', async (req: Request, res: Response) => {
 });
 
 apiRouter.post('/qr/verify', (req: Request, res: Response) => {
-  const { tokenString } = req.body;
-  if (!tokenString) return res.status(400).json({ error: 'Token is required' });
+  const tokenInput = req.body.tokenString || req.body.token;
+  const customerId = req.body.customerId;
+  if (!tokenInput || typeof tokenInput !== 'string' || !tokenInput.trim()) {
+    return res.status(400).json({ valid: false, error: 'QR token is invalid.' });
+  }
 
   // Handle if raw JSON QR content was passed
-  let token = tokenString.trim();
+  let token = tokenInput.trim();
   try {
-    const parsed = JSON.parse(tokenString);
+    const parsed = JSON.parse(token);
     if (parsed.trustchain_qr_token) token = parsed.trustchain_qr_token;
     else if (parsed.trustchain_verification) token = parsed.trustchain_verification;
+    else if (parsed.token) token = parsed.token;
   } catch (e) {
     // raw string
   }
 
   let qrRecord = db.findQRToken(token);
   if (!qrRecord) {
-    // Check if token matches customer token format or prefix
-    const lowerToken = token.toLowerCase();
-    const customers = db.getAllCustomers();
-    const matchedCustomer = customers.find(c => 
-      lowerToken.includes(c.name.toLowerCase().replace(/\s+/g, '-')) ||
-      lowerToken.includes(c.name.toLowerCase().split(' ')[0]) ||
-      lowerToken.includes(c.id.toLowerCase()) ||
-      lowerToken.includes('mohamed') ||
-      lowerToken.includes('9841')
-    ) || (lowerToken.startsWith('tkn-') ? {
-      id: 'usr-1',
-      name: lowerToken.includes('priya') ? 'Priya Sharma' : 'Mohamed Arif A',
-      email: lowerToken.includes('priya') ? 'priya.sharma@example.com' : 'arif@trustchain.id',
-      phone: lowerToken.includes('priya') ? '+91 98234 56789' : '+91 98410 23456',
-    } : null);
-
-    if (matchedCustomer || token.startsWith('tkn-') || token.startsWith('tc_')) {
-      const custName = matchedCustomer?.name || 'Mohamed Arif A';
-      const synthRecord = {
-        token,
-        userId: matchedCustomer?.id || 'usr-1',
-        userName: custName,
-        userEmail: matchedCustomer?.email || 'arif@trustchain.id',
-        userPhone: matchedCustomer?.phone || '+91 98410 23456',
-        verifier: 'Bank Branch Desk',
-        bankName: 'State Bank of India',
-        claims: ['Age >= 18 Valid (Groth16 ZKP)', 'UIDAI e-Sign KYC Active', 'Territorial State: Tamil Nadu'],
-        proofId: `prf-zk-${Date.now().toString(16)}`,
-        txHash: blockchain.generateTxHash(),
-        status: 'valid' as const,
-        createdAt: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      };
-      db.saveQRToken(synthRecord as any);
-      qrRecord = synthRecord as any;
-    } else {
-      return res.status(404).json({
-        status: 'invalid',
-        error: 'QR verification token not recognized on blockchain ledger. Please select or paste a valid customer token.',
-      });
+    // If a customerId was provided, check if that customer has an active QR token
+    if (customerId) {
+      const custUser =
+        db.findUserById(customerId) ||
+        db.getAllUsers().find(
+          u =>
+            u.id === customerId ||
+            (u as any).customerId === customerId ||
+            u.id.includes(customerId.replace('CUST-', '').toLowerCase())
+        );
+      if (custUser) {
+        const active = db.getActiveQRTokenForUser(custUser.id);
+        if (active) {
+          qrRecord = active;
+          token = active.token;
+        } else {
+          // Check if previous QR was used or expired
+          const userTokens = db.getQRTokensForUser(custUser.id);
+          if (userTokens.length > 0) {
+            const latest = userTokens[0];
+            if (latest.status === 'used') {
+              return res.json({ valid: false, status: 'already_used', error: 'QR token has already been used.' });
+            }
+            if (new Date() > new Date(latest.expiresAt) || latest.status === 'expired') {
+              return res.json({ valid: false, status: 'expired', error: 'QR token is expired.' });
+            }
+          }
+          return res.json({ valid: false, status: 'rejected', error: 'QR session is no longer active.' });
+        }
+      }
     }
   }
 
-  // Check expiration
-  if (new Date() > new Date(qrRecord.expiresAt)) {
-    db.updateQRTokenStatus(token, 'expired');
+  if (!qrRecord) {
     return res.json({
-      status: 'expired',
-      message: 'This verification QR has expired.',
-      payload: qrRecord,
+      valid: false,
+      status: 'invalid',
+      error: 'QR token is invalid.',
     });
   }
 
+  const resolvedTargetUser = customerId
+    ? db.findUserById(customerId) ||
+      db.getAllUsers().find(
+        u =>
+          u.id === customerId ||
+          (u as any).customerId === customerId ||
+          u.id.includes(customerId.replace('CUST-', '').toLowerCase())
+      )
+    : undefined;
+  const targetUserId = resolvedTargetUser ? resolvedTargetUser.id : customerId;
+
+  // 1. Validate customer account ownership
+  const isCustomerMatch =
+    !targetUserId ||
+    qrRecord.userId === targetUserId ||
+    qrRecord.userId === customerId ||
+    (resolvedTargetUser && (
+      qrRecord.userId === resolvedTargetUser.id ||
+      (qrRecord.userName && resolvedTargetUser.name && qrRecord.userName.toLowerCase().trim() === resolvedTargetUser.name.toLowerCase().trim()) ||
+      ((qrRecord as any).userEmail && resolvedTargetUser.email && (qrRecord as any).userEmail.toLowerCase() === resolvedTargetUser.email.toLowerCase())
+    ));
+
+  if (!isCustomerMatch) {
+    db.updateQRTokenStatus(token, 'rejected', { rejectionReason: 'QR token does not belong to this customer.' });
+    return res.json({
+      valid: false,
+      status: 'rejected',
+      error: 'QR token does not belong to this customer.',
+    });
+  }
+
+  // 2. Validate active session / revocation
   if (qrRecord.status === 'revoked') {
     return res.json({
-      status: 'revoked',
-      message: 'This verification QR was revoked by the user.',
-      payload: qrRecord,
+      valid: false,
+      status: 'rejected',
+      error: 'QR session is no longer active.',
     });
   }
 
+  // 3. Validate single-use status
   if (qrRecord.status === 'used') {
     return res.json({
+      valid: false,
       status: 'already_used',
-      message: 'This single-use verification QR has already been verified.',
-      payload: qrRecord,
+      error: 'QR token has already been used.',
     });
   }
 
-  // Mark as used
-  db.updateQRTokenStatus(token, 'used');
+  // 4. Validate expiration
+  if (new Date() > new Date(qrRecord.expiresAt)) {
+    db.updateQRTokenStatus(token, 'expired', { rejectionReason: 'QR token is expired.' });
+    return res.json({
+      valid: false,
+      status: 'expired',
+      error: 'QR token is expired.',
+    });
+  }
 
+  // 5. Validate required credential / zero-knowledge proof information
+  if (!qrRecord.proofId || !qrRecord.proofHash) {
+    const userProofs = db.getProofsByUserId(qrRecord.userId);
+    if (userProofs && userProofs.length > 0) {
+      qrRecord.proofId = userProofs[0].id;
+      qrRecord.proofHash = userProofs[0].proofHash;
+    } else {
+      const u = db.findUserById(qrRecord.userId);
+      const genProof = blockchain.generateZKProof({
+        userId: qrRecord.userId,
+        claimType: 'identity_verified',
+        userData: {
+          age: u?.age ?? 24,
+          dob: u?.dob ?? '2002-01-01',
+          addressState: u?.addressState ?? 'Tamil Nadu, India',
+          kycStatus: u?.kycStatus ?? 'verified',
+        },
+        verifier: qrRecord.bankName || 'Bank Verification Desk',
+      });
+      const newProof = db.addProof({
+        id: `zkp-${Date.now()}`,
+        userId: qrRecord.userId,
+        ...genProof,
+        createdAt: new Date().toISOString(),
+      });
+      qrRecord.proofId = newProof.id;
+      qrRecord.proofHash = newProof.proofHash;
+    }
+  }
+
+  const customer = db.findUserById(qrRecord.userId) || resolvedTargetUser;
+  if (!customer) {
+    db.updateQRTokenStatus(token, 'rejected', { rejectionReason: 'Customer verification failed.' });
+    return res.json({
+      valid: false,
+      status: 'rejected',
+      error: 'Customer verification failed.',
+    });
+  }
+
+  if (customer.kycStatus === 'rejected') {
+    db.updateQRTokenStatus(token, 'rejected', { rejectionReason: 'Credential is not valid.' });
+    return res.json({
+      valid: false,
+      status: 'rejected',
+      error: 'Credential is not valid.',
+    });
+  }
+
+  // 6. All validations succeeded -> Mark as verified & used
   const staff = getAuthStaff(req);
   const bankName = staff?.bankName || qrRecord.bankName || 'HDFC Trust Banking';
 
-  // Dispatch live notification to the specific customer
+  db.updateQRTokenStatus(token, 'used', {
+    verifiedAt: new Date().toISOString(),
+    verifiedBy: bankName,
+  });
+  qrRecord.status = 'used';
+  qrRecord.verifiedAt = new Date().toISOString();
+  qrRecord.verifiedBy = bankName;
+
+  // Update customer sovereign KYC status
+  db.updateUserKyc(customer.id, 'verified');
+
+  // Dispatch live notification strictly to the verified customer's account
   db.addNotification({
     id: `notif-qr-${Date.now()}`,
     userId: qrRecord.userId,
-    title: 'Your QR has been verified',
-    message: `Bank verification completed successfully by ${bankName}. Sovereign KYC credentials confirmed.`,
+    title: 'Your QR has been verified successfully.',
+    message: `Your QR has been verified successfully by ${bankName}. Sovereign KYC credentials confirmed.`,
     type: 'success',
     timestamp: 'Just now',
     read: false,
@@ -955,8 +1049,9 @@ apiRouter.post('/qr/verify', (req: Request, res: Response) => {
   });
 
   return res.json({
+    valid: true,
     status: 'valid',
-    message: 'Verification QR validated successfully.',
+    message: 'QR Verified Successfully',
     payload: {
       ...qrRecord,
       status: 'used',
@@ -979,6 +1074,25 @@ apiRouter.get('/qr/status/:token', (req: Request, res: Response) => {
     userId: qrRecord.userId,
     userName: qrRecord.userName,
     expiresAt: qrRecord.expiresAt,
+    rejectionReason: qrRecord.rejectionReason,
+    verifiedAt: qrRecord.verifiedAt,
+    verifiedBy: qrRecord.verifiedBy,
+  });
+});
+
+// Get Active Valid QR Token for Authenticated Customer
+apiRouter.get('/qr/active', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
+  const active = db.getActiveQRTokenForUser(user.id);
+  if (!active) {
+    return res.json({ active: false, payload: null });
+  }
+
+  return res.json({
+    active: true,
+    payload: active,
   });
 });
 
@@ -1224,6 +1338,216 @@ apiRouter.get('/bank/customers', (req: Request, res: Response) => {
   });
 
   return res.json(enhanced);
+});
+
+// Bank Live Verification Queue
+apiRouter.get('/bank/customers-queue', (req: Request, res: Response) => {
+  const customers = db.getAllCustomers();
+  const queue = customers.map(c => {
+    const activeQr = db.getActiveQRTokenForUser(c.id);
+    const userTokens = db.getQRTokensForUser(c.id);
+    const latestToken = userTokens[0];
+    const customerCode =
+      c.id === 'usr-arif-02'
+        ? 'CUST-9841'
+        : c.id === 'usr-priya-05'
+        ? 'CUST-4128'
+        : c.id === 'usr-midhun-01'
+        ? 'CUST-7219'
+        : c.id === 'usr-kishore-03'
+        ? 'CUST-3382'
+        : `CUST-${c.id.slice(-4)}`;
+
+    const defaultToken = `tkn-${customerCode.replace('CUST-', '')}-${c.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-zkp`;
+    const token = activeQr ? activeQr.token : (latestToken ? latestToken.token : defaultToken);
+
+    return {
+      id: c.id,
+      customerId: customerCode,
+      customerName: c.name,
+      requestedFacility:
+        c.id === 'usr-arif-02'
+          ? 'Kisan Zero-Disclosure Agricultural Credit'
+          : c.id === 'usr-priya-05'
+          ? 'Tier-1 Micro-Business Credit Line'
+          : 'Sovereign Digital KYC & Zero-Knowledge Verification',
+      agePredicate: 'Age >= 18 Valid (Groth16 ZKP)',
+      aadhaarMasked: c.aadhaarMasked,
+      panMasked: c.panMasked,
+      addressState: c.addressState,
+      trustAiScore: c.privacyScore,
+      trustAiRiskLevel: c.privacyScore >= 90 ? 'LOW' : c.privacyScore >= 75 ? 'MEDIUM' : 'HIGH',
+      proofHash: (c as any).updatedProofHash || activeQr?.proofHash || latestToken?.proofHash || '0xzk7841bc90aef4316d28905b7610fa789c',
+      timestamp: (c as any).updatedProofAt || activeQr?.createdAt || c.createdAt || '2026-09-11T14:22:00.000Z',
+      status: (c as any).updatedProofStatus === 'submitted'
+        ? 'updated_proof_submitted'
+        : (c as any).updatedProofStatus === 'requested'
+        ? 'updated_proof_requested'
+        : (c.kycStatus === 'verified' && (!latestToken || latestToken.status === 'used'))
+        ? 'verified'
+        : 'pending',
+      updatedProofStatus: (c as any).updatedProofStatus,
+      updatedProofAt: (c as any).updatedProofAt,
+      verificationToken: token,
+      phone: c.phone,
+      email: c.email,
+    };
+  });
+
+  return res.json(queue);
+});
+
+// Bank Request Updated Proof from Specific Customer
+apiRouter.post('/bank/request-updated-proof', (req: Request, res: Response) => {
+  const staff = getAuthStaff(req);
+  if (!staff) return res.status(401).json({ error: 'Unauthorized bank manager session' });
+
+  const { customerId } = req.body;
+  if (!customerId) return res.status(400).json({ error: 'customerId is required' });
+
+  const allCustomers = db.getAllCustomers();
+  const customer = allCustomers.find(c => c.id === customerId || `CUST-${c.id.slice(-4)}` === customerId || (c as any).customerId === customerId);
+  if (!customer) return res.status(404).json({ error: 'Customer not found' });
+
+  // Update status for this exact customer
+  db.requestUpdatedProofForUser(customer.id);
+
+  // Send notification to this exact customer
+  db.createNotification({
+    id: `notif-proof-${Date.now()}`,
+    userId: customer.id,
+    title: 'Updated Proof Required',
+    message: `${staff.bankName || 'State Bank of India'} has requested an updated cryptographic identity proof for your profile.`,
+    type: 'request',
+    timestamp: new Date().toISOString(),
+    read: false,
+  });
+
+  // Create verification request for this customer
+  const newReq = db.createRequest({
+    id: `req-proof-update-${Date.now()}`,
+    userId: customer.id,
+    bankId: staff.bankId || 'bank-sbi',
+    bankName: staff.bankName || 'State Bank of India',
+    purpose: 'Updated Zero-Knowledge Proof Verification',
+    requestedAttributes: ['Age >= 18 Valid (Groth16 ZKP)', 'UIDAI e-Sign KYC Active', 'Territorial State Jurisdiction'],
+    requestedProof: 'zkp-identity-update',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  });
+
+  db.addAuditLog({
+    id: `audit-${Date.now()}`,
+    timestamp: new Date().toISOString(),
+    event: 'UPDATED_PROOF_REQUESTED',
+    actor: `${staff.name} (${staff.employeeId})`,
+    organization: staff.bankName || 'State Bank of India',
+    action: `Requested updated cryptographic proof from customer ${customer.name} (${customer.id}).`,
+    txHash: blockchain.generateTxHash(),
+    status: 'confirmed',
+  });
+
+  return res.json({
+    success: true,
+    message: 'Notification Sent',
+    customer: { id: customer.id, name: customer.name, customerId: (customer as any).customerId || `CUST-${customer.id.slice(-4)}` },
+    request: newReq,
+  });
+});
+
+// Customer Submit Updated Proof
+apiRouter.post('/customer/submit-updated-proof', async (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized customer session' });
+
+  const { claimType } = req.body;
+
+  // Generate fresh Groth16 ZK proof
+  const zkResult = blockchain.generateZKProof({
+    userId: user.id,
+    claimType: claimType || 'age_over_18',
+    userData: { age: user.age, dob: user.dob, addressState: user.addressState, kycStatus: user.kycStatus },
+    verifier: 'State Bank of India',
+  });
+
+  const proofItem = db.addProof({
+    id: `zkp-${Date.now()}`,
+    userId: user.id,
+    ...zkResult,
+    createdAt: new Date().toISOString(),
+  });
+
+  // Mark updated proof as submitted for this customer
+  db.submitUpdatedProofForUser(user.id, proofItem.proofHash);
+
+  // If user has any pending verification requests, mark them approved
+  const requests = db.getRequestsForUser(user.id);
+  requests.forEach(r => {
+    if (r.status === 'pending') {
+      db.updateRequestStatus(r.id, 'approved');
+    }
+  });
+
+  // Confirmation notification for customer
+  db.createNotification({
+    id: `notif-proof-submitted-${Date.now()}`,
+    userId: user.id,
+    title: 'Updated Proof Submitted Successfully',
+    message: `Your updated zero-knowledge cryptographic proof (${proofItem.proofHash.substring(0, 16)}...) has been submitted to your bank.`,
+    type: 'success',
+    timestamp: new Date().toISOString(),
+    read: false,
+  });
+
+  db.addAuditLog({
+    id: `audit-${Date.now()}`,
+    timestamp: new Date().toISOString(),
+    event: 'UPDATED_PROOF_SUBMITTED',
+    actor: user.name,
+    organization: 'TrustChain Sovereign Network',
+    action: `Submitted updated cryptographic proof ${proofItem.proofHash.substring(0, 16)}... to State Bank of India.`,
+    proofId: proofItem.id,
+    txHash: proofItem.txHash,
+    status: 'confirmed',
+  });
+
+  return res.json({
+    success: true,
+    message: 'Updated Proof Submitted Successfully',
+    proof: proofItem,
+  });
+});
+
+// Bank Customer Verification Action
+apiRouter.post('/bank/customers/:id/verify', (req: Request, res: Response) => {
+  const staff = getAuthStaff(req);
+  if (!staff) return res.status(401).json({ error: 'Unauthorized bank manager session' });
+
+  const { action } = req.body;
+  const customerId = req.params.id;
+  const allCustomers = db.getAllCustomers();
+  const customer = allCustomers.find(c => c.id === customerId || `CUST-${c.id.slice(-4)}` === customerId || (c as any).customerId === customerId);
+  if (!customer) return res.status(404).json({ error: 'Customer not found' });
+
+  if (action === 'approve') {
+    db.verifyUpdatedProofForUser(customer.id);
+    customer.kycStatus = 'verified';
+    db.addAuditLog({
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      event: 'BANK_VERIFICATION_CONFIRMED',
+      actor: `${staff.name} (${staff.employeeId})`,
+      organization: staff.bankName || 'State Bank of India',
+      action: `Cryptographic proof verified and compliance confirmed for customer ${customer.name}.`,
+      txHash: blockchain.generateTxHash(),
+      status: 'confirmed',
+    });
+    return res.json({ success: true, message: 'Proof verified successfully', customer });
+  } else {
+    customer.kycStatus = 'rejected';
+    (customer as any).updatedProofStatus = 'rejected';
+    return res.json({ success: true, message: 'Verification rejected', customer });
+  }
 });
 
 // Bank Support Cases Endpoints
@@ -1494,7 +1818,7 @@ apiRouter.get('/bank/blockchain-ledger', (req: Request, res: Response) => {
       verifierContract: '0x71bca904e8b11c9f28d7a16490e81c',
       timestamp: 'Today',
       gasUsed: '21,000 Gwei',
-      status: 'finalized',
+      status: 'confirmed',
     });
   }
 

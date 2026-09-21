@@ -11,6 +11,9 @@ export interface User {
   avatar: string;
   role: 'customer';
   kycStatus: 'verified' | 'pending' | 'rejected';
+  updatedProofStatus?: 'requested' | 'submitted' | 'verified';
+  updatedProofHash?: string;
+  updatedProofAt?: string;
   age: number;
   dob: string;
   aadhaarMasked: string;
@@ -157,9 +160,13 @@ export interface QRTokenPayload {
   proofId: string;
   proofHash: string;
   txHash: string;
-  status: 'valid' | 'used' | 'expired' | 'revoked';
+  status: 'valid' | 'used' | 'expired' | 'revoked' | 'rejected';
   createdAt: string;
   expiresAt: string;
+  claims?: string[];
+  rejectionReason?: string;
+  verifiedAt?: string;
+  verifiedBy?: string;
 }
 
 export interface BankCustomerRecord {
@@ -175,7 +182,9 @@ export interface BankCustomerRecord {
   trustAiRiskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
   proofHash: string;
   timestamp: string;
-  status: 'pending' | 'verified' | 'rejected';
+  status: 'pending' | 'verified' | 'rejected' | 'updated_proof_requested' | 'updated_proof_submitted';
+  updatedProofStatus?: 'requested' | 'submitted' | 'verified';
+  updatedProofAt?: string;
   verificationToken?: string;
   phone?: string;
   email?: string;

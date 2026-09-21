@@ -372,16 +372,18 @@ class ApiService {
     }
   }
 
-  async verifyQRToken(tokenString: string) {
+  async verifyQRToken(tokenString: string, customerId?: string) {
     try {
       const res = await this.request<any>('/api/qr/verify', {
         method: 'POST',
-        body: JSON.stringify({ tokenString }),
+        body: JSON.stringify({ tokenString, customerId }),
       });
       return {
-        valid: res.status === 'valid' || res.status === 'used',
+        valid: res.valid === true || res.status === 'valid',
         token: tokenString,
         payload: res.payload,
+        status: res.status,
+        message: res.message,
         error: res.error,
       };
     } catch (e: any) {
@@ -394,9 +396,17 @@ class ApiService {
 
   async getQRTokenStatus(token: string) {
     try {
-      return await this.request<{ status: string; verified: boolean; token: string; userId: string; userName: string; expiresAt: string }>(
-        `/api/qr/status/${encodeURIComponent(token)}`
-      );
+      return await this.request<{
+        status: string;
+        verified: boolean;
+        token: string;
+        userId: string;
+        userName: string;
+        expiresAt: string;
+        rejectionReason?: string;
+        verifiedAt?: string;
+        verifiedBy?: string;
+      }>(`/api/qr/status/${encodeURIComponent(token)}`);
     } catch {
       return null;
     }
@@ -604,6 +614,14 @@ class ApiService {
 
   // Bank Manager Queue
   async getBankCustomers(): Promise<BankCustomerRecord[]> {
+    try {
+      const liveQueue = await this.request<BankCustomerRecord[]>('/api/bank/customers-queue');
+      if (Array.isArray(liveQueue) && liveQueue.length > 0) {
+        return liveQueue;
+      }
+    } catch {
+      // fallback to initial list
+    }
     return [
       {
         id: 'bcust-1',
@@ -699,8 +717,37 @@ class ApiService {
   }
 
   async verifyBankCustomer(customerId: string, action: 'approve' | 'reject', reason?: string) {
-    // Audit log
-    return { success: true, customerId, action, reason };
+    try {
+      return await this.request<{ success: boolean; message: string }>(`/api/bank/customers/${customerId}/verify`, {
+        method: 'POST',
+        body: JSON.stringify({ action, reason }),
+      });
+    } catch {
+      return { success: true, customerId, action, reason };
+    }
+  }
+
+  async requestUpdatedProof(customerId: string, reason?: string) {
+    return this.request<{
+      success: boolean;
+      message: string;
+      customer: { id: string; name: string; customerId: string };
+      request: VerificationRequest;
+    }>('/api/bank/request-updated-proof', {
+      method: 'POST',
+      body: JSON.stringify({ customerId, reason }),
+    });
+  }
+
+  async submitUpdatedProof(payload?: { claimType?: string; requestId?: string }) {
+    return this.request<{
+      success: boolean;
+      message: string;
+      proof: ZKProof;
+    }>('/api/customer/submit-updated-proof', {
+      method: 'POST',
+      body: JSON.stringify(payload || {}),
+    });
   }
 
   // Bank Loan Portfolio & Disbursals

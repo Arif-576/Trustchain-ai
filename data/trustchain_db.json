@@ -75,6 +75,45 @@
       "createdAt": "2026-01-05T09:00:00.000Z",
       "passwordHash": "e0e1910c09701a51ee4b17d59d0df1f151b4a330eebabcaff56089b54b915f06",
       "passkeyEnrolled": true
+    },
+    {
+      "id": "usr-1789892017562-108",
+      "did": "did:trustchain:usr-1789892017562-108",
+      "name": "Arif",
+      "email": "mohamedarif55an@gmail.com",
+      "phone": "+91 9556869726",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "role": "customer",
+      "kycStatus": "verified",
+      "age": 24,
+      "dob": "2002-05-14",
+      "aadhaarMasked": "XXXX-XXXX-8427",
+      "panMasked": "ABCDE2618F",
+      "addressState": "Tamil Nadu, India",
+      "privacyScore": 96,
+      "dataMinimizationScore": 98,
+      "createdAt": "2026-09-20T08:13:37.562Z",
+      "passwordHash": "10ba7e2d06b225174130dd2e756686319c93f42790d46bcf64d52e1945b036d9",
+      "passkeyEnrolled": true
+    },
+    {
+      "id": "usr-priya-05",
+      "name": "Priya Sharma",
+      "email": "priya@trustchain.id",
+      "phone": "+91 98765 43214",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+      "role": "customer",
+      "kycStatus": "verified",
+      "age": 28,
+      "dob": "1998-05-20",
+      "aadhaarMasked": "XXXX-XXXX-6631",
+      "panMasked": "BRDPS****M",
+      "addressState": "Maharashtra, India",
+      "privacyScore": 96,
+      "dataMinimizationScore": 95,
+      "createdAt": "2026-01-20T11:00:00.000Z",
+      "passwordHash": "e0e1910c09701a51ee4b17d59d0df1f151b4a330eebabcaff56089b54b915f06",
+      "passkeyEnrolled": true
     }
   ],
   "bankStaff": [
@@ -180,6 +219,23 @@
         "addressVerified": true,
         "incomeEligible": true
       }
+    },
+    {
+      "id": "cred-usr-1789892017562-108-gov-kyc",
+      "userId": "usr-1789892017562-108",
+      "credentialType": "Government Issued Reusable KYC Passport",
+      "issuer": "Unique Identification Authority of India (UIDAI)",
+      "issueDate": "2026-09-20T08:13:37.563Z",
+      "expiryDate": "2027-09-20T08:13:37.563Z",
+      "status": "valid",
+      "credentialHash": "7f0214bec1f11a340a68eaf4756ae151a9e73328e8130ac0d0c5323fa3448f8e",
+      "txHash": "0xfca9fecd037aeb21860eb3025dea43daa03ff80be69616e5300c933304ad307c",
+      "claims": {
+        "ageEligibility": true,
+        "identityVerified": true,
+        "addressVerified": true,
+        "incomeEligible": true
+      }
     }
   ],
   "verificationRequests": [
@@ -196,13 +252,14 @@
       ],
       "disclosedAttributes": [
         "KYC Verified Claim",
-        "Age Above 18 (ZKP)"
+        "Age Above 18 (ZKP)",
+        "State Residency Claim"
       ],
       "requestedProof": "Age >= 18 & KYC Authenticated",
       "riskScore": 18,
       "riskLevel": "LOW",
       "riskRecommendation": "Safe to approve. Only zero-knowledge claim required.",
-      "status": "pending",
+      "status": "approved",
       "createdAt": "2026-09-10T11:20:00.000Z",
       "expiresAt": "2026-09-20T23:59:59.000Z"
     },
@@ -250,6 +307,161 @@
   ],
   "proofs": [
     {
+      "id": "zkp-1789894531785",
+      "userId": "usr-1",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzk5ae6b693b61d3d56d1370a309659a170004c20071c4a7a3fd2736b9d4d71e285",
+      "txHash": "0xc7f7c121636d2abed957c8af5576d547de56e6eee1aa8b4d2ed22a5ff6cd2643",
+      "blockNumber": 1845212,
+      "verifier": "State Bank of India",
+      "timestamp": "2026-09-20T08:55:31.785Z",
+      "createdAt": "2026-09-20T08:55:31.785Z"
+    },
+    {
+      "id": "zkp-1789893010691",
+      "userId": "usr-arif-02",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzka220fdc9c6cda7616c15b16cbb744a9ea349e7b8ea020082637f272b55d66335",
+      "txHash": "0x59ac36a8be656e1022f6ac249bbeaa017a34dc66153ba185ff162bb8637f1e6f",
+      "blockNumber": 1845252,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:30:10.691Z",
+      "createdAt": "2026-09-20T08:30:10.691Z"
+    },
+    {
+      "id": "zkp-1789893010650",
+      "userId": "usr-arif-02",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzkb19bd7266fbae529e883351f3150f397f5f53a7d1091fe78f0cc7bd687bfad4f",
+      "txHash": "0x5179767d3c181477a7db28a8606ab040c0820de1fb492ff0d264a1f576d91ead",
+      "blockNumber": 1845250,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:30:10.650Z",
+      "createdAt": "2026-09-20T08:30:10.650Z"
+    },
+    {
+      "id": "zkp-1789893010447",
+      "userId": "usr-arif-02",
+      "requestId": "req-01",
+      "claimType": "age_over_18",
+      "requirement": "Predicate: age >= 18",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzk755d1650e1d6030e6d49a47beae862ecfa0fef236c89a0609b920018519fe51b",
+      "txHash": "0x6931a64a4c0221ba0257bee544045a04f2f64758c4dcd5314fed0f7af520a594",
+      "blockNumber": 1845247,
+      "verifier": "HDFC Trust Banking",
+      "timestamp": "2026-09-20T08:30:10.447Z",
+      "createdAt": "2026-09-20T08:30:10.447Z"
+    },
+    {
+      "id": "zkp-1789892446412",
+      "userId": "usr-arif-02",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzk52095736cc3690979b7bd43fca4873b3f0ea75159d17f80dc1c6ac8f80be7faa",
+      "txHash": "0x73df1bba6cf223276284b352001ff7a14a346f3c89f930c4a9144511eb1cce78",
+      "blockNumber": 1845238,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:20:46.412Z",
+      "createdAt": "2026-09-20T08:20:46.412Z"
+    },
+    {
+      "id": "zkp-1789892446377",
+      "userId": "usr-arif-02",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzkc4879176d6a37870aac625c8feeb999553c6b4590bcba1c7c94ad31aea927a0e",
+      "txHash": "0x551e723225507e609965755ded55ed1ae7da52a3f336aebc1501090dea1dfc22",
+      "blockNumber": 1845237,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:20:46.377Z",
+      "createdAt": "2026-09-20T08:20:46.377Z"
+    },
+    {
+      "id": "zkp-1789892393024",
+      "userId": "usr-krishnesh-04",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzke6c2c70779c2325f9e8ae127f9855f254c12e505af4d0f689ee07a0b0640cab4",
+      "txHash": "0x91b3cede285af1a1cff3e64058377bc48a442c4c511c3e1d550ff1e88893e53e",
+      "blockNumber": 1845230,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:19:53.024Z",
+      "createdAt": "2026-09-20T08:19:53.024Z"
+    },
+    {
+      "id": "zkp-1789892392990",
+      "userId": "usr-krishnesh-04",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzk04350357bd3030d4a0abff15f0851445b4d9d8507da051baf50f77ae8fa7f908",
+      "txHash": "0x401ce59a520c40c99c63d822d2b60443f8f1b036099ca7794125e78b82e265b8",
+      "blockNumber": 1845227,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:19:52.990Z",
+      "createdAt": "2026-09-20T08:19:52.990Z"
+    },
+    {
+      "id": "zkp-1789892307002",
+      "userId": "usr-krishnesh-04",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzk4b97d74c1886d18bce8441811ee7879caee765258153fb4fd342213ec3c3cd36",
+      "txHash": "0x924129c67c72c0b5870513462fcad318489db3f29b417d856f41a7eea0d918cc",
+      "blockNumber": 1845222,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:18:27.002Z",
+      "createdAt": "2026-09-20T08:18:27.002Z"
+    },
+    {
+      "id": "zkp-1789892299111",
+      "userId": "usr-krishnesh-04",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzkcf9d9423caf649aa2401ab903a7ba322a78ac3e1a6c69941aec05268c5a3ab69",
+      "txHash": "0x0c10018a5c15b319f60a03e64d0d4086a81feca881c0371afb919763262a5791",
+      "blockNumber": 1845221,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:18:19.111Z",
+      "createdAt": "2026-09-20T08:18:19.111Z"
+    },
+    {
+      "id": "zkp-1789892299053",
+      "userId": "usr-krishnesh-04",
+      "claimType": "identity_verified",
+      "requirement": "Predicate: kycStatus == \"verified\"",
+      "verifiedResult": true,
+      "dobRevealed": false,
+      "proofHash": "0xzk4f15d53593269d909f0f815deefa2e513135e8f2ddd47a60c86be2b4ab7a2304",
+      "txHash": "0xb79ca56530fc9aaf8d5448332322eda4b78a469605e1d8fbfecab5ce10e5d021",
+      "blockNumber": 1845219,
+      "verifier": "Bank Verification Desk",
+      "timestamp": "2026-09-20T08:18:19.053Z",
+      "createdAt": "2026-09-20T08:18:19.053Z"
+    },
+    {
       "id": "zkp-proof-01",
       "userId": "usr-arif-02",
       "requestId": "req-01",
@@ -280,6 +492,26 @@
     }
   ],
   "consents": [
+    {
+      "id": "consent-1789893010463",
+      "userId": "usr-arif-02",
+      "organization": "HDFC Trust Banking",
+      "purpose": "Verification for Pre-Approved Personal Credit Facility",
+      "grantedData": [
+        "KYC Verified Claim",
+        "Age Above 18 (ZKP)",
+        "State Residency Claim"
+      ],
+      "requestedData": [
+        "KYC Verified Claim",
+        "Age Above 18 (ZKP)",
+        "State Residency Claim"
+      ],
+      "approvedDate": "2026-09-20",
+      "expiryDate": "2027-09-20",
+      "status": "active",
+      "txHash": "0x6931a64a4c0221ba0257bee544045a04f2f64758c4dcd5314fed0f7af520a594"
+    },
     {
       "id": "consent-01",
       "userId": "usr-arif-02",
@@ -321,9 +553,220 @@
       "expiryDate": "2027-08-01",
       "status": "active",
       "txHash": "0xe989d182952a20740c4b84ffe539e2d86a6ddd1389eee935afd3dc1494da1cf2"
+    },
+    {
+      "id": "con-usr-1789892017562-108-01",
+      "userId": "usr-1789892017562-108",
+      "organization": "HDFC Trust Banking",
+      "purpose": "Account Opening & Sovereign Zero-Disclosure KYC Attestation",
+      "grantedData": [
+        "Zero-Knowledge Age Predicate",
+        "Government KYC Cryptographic Signature"
+      ],
+      "approvedDate": "2026-09-20T08:13:37.563Z",
+      "expiryDate": "2027-03-19T08:13:37.563Z",
+      "status": "active",
+      "txHash": "0x36d04288f652a4b04f76e19b70763e3abc9b5502d1d4666e4f447df2f5946b43"
     }
   ],
   "auditLogs": [
+    {
+      "id": "audit-1789894543926",
+      "userId": "usr-arif-02",
+      "bankId": "BANK-HDFC-901",
+      "timestamp": "2026-09-20T08:55:43.926Z",
+      "event": "QR_VERIFICATION_COMPLETED",
+      "actor": "Bank Verification Desk",
+      "organization": "HDFC Trust Banking",
+      "action": "QR Token verified for Mohamed Arif A. Proof ID: zkp-1789893010447",
+      "proofId": "zkp-1789893010447",
+      "txHash": "0x6931a64a4c0221ba0257bee544045a04f2f64758c4dcd5314fed0f7af520a594",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789894531787",
+      "userId": "usr-1",
+      "bankId": "BANK-HDFC-901",
+      "timestamp": "2026-09-20T08:55:31.787Z",
+      "event": "QR_VERIFICATION_COMPLETED",
+      "actor": "Bank Verification Desk",
+      "organization": "State Bank of India",
+      "action": "QR Token verified for Priya Sharma. Proof ID: zkp-1789894531785",
+      "proofId": "zkp-1789894531785",
+      "txHash": "0xa503796bced54dd0d49ef0212a8d4458c2e788e25b5f255fea624520e4ac51fd",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789893010463",
+      "timestamp": "2026-09-20T08:30:10.463Z",
+      "event": "BANK_REQUEST_APPROVED",
+      "actor": "Mohamed Arif A",
+      "organization": "HDFC Trust Banking",
+      "action": "Approved selective disclosure for Verification for Pre-Approved Personal Credit Facility. ZKP proof issued.",
+      "proofId": "zkp-1789893010447",
+      "txHash": "0x6931a64a4c0221ba0257bee544045a04f2f64758c4dcd5314fed0f7af520a594",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892906571",
+      "timestamp": "2026-09-20T08:28:26.571Z",
+      "event": "DEVICE_PASSKEY_AUTHENTICATED",
+      "actor": "Mohamed Arif A",
+      "organization": "TrustChain WebAuthn Enclave",
+      "action": "Hardware passkey challenge confirmed. Identity wallet unlocked.",
+      "txHash": "0xcb6f197b90c530572280cedc926ac558e982d5b0bb477cdb88051bd363479c8c",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892901184",
+      "timestamp": "2026-09-20T08:28:21.183Z",
+      "event": "FACE_LIVENESS_VERIFIED",
+      "actor": "Mohamed Arif A",
+      "organization": "Client Device Enclave",
+      "action": "Live face liveness and anti-spoofing validated locally in browser.",
+      "txHash": "0x3d8442e5ccae13699d4b2ba4a2adbfb6a45eb76a168ec8a4afe778f9a10d2efa",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892580814",
+      "userId": "usr-midhun-01",
+      "bankId": "BANK-HDFC-901",
+      "timestamp": "2026-09-20T08:23:00.814Z",
+      "event": "QR_VERIFICATION_COMPLETED",
+      "actor": "Rajesh Kumar (EMP-4082)",
+      "organization": "HDFC Trust Banking & Credit",
+      "action": "QR Token verified for Midhun. Proof ID: prf-zk-1a0bde955cd",
+      "proofId": "prf-zk-1a0bde955cd",
+      "txHash": "0x45310a723d1840db590a756e3cfb27097626d0344abd98794fe271a61b7fb162",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892433314",
+      "timestamp": "2026-09-20T08:20:33.314Z",
+      "event": "DEVICE_PASSKEY_AUTHENTICATED",
+      "actor": "Mohamed Arif A",
+      "organization": "TrustChain WebAuthn Enclave",
+      "action": "Hardware passkey challenge confirmed. Identity wallet unlocked.",
+      "txHash": "0x8883334e73da5f336b5952eaf1cc0ddd37d1082d7b8ef8301b2aa234ad264da6",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892429010",
+      "timestamp": "2026-09-20T08:20:29.010Z",
+      "event": "FACE_LIVENESS_VERIFIED",
+      "actor": "Mohamed Arif A",
+      "organization": "Client Device Enclave",
+      "action": "Live face liveness and anti-spoofing validated locally in browser.",
+      "txHash": "0x1b0c51e5e4c6a496405f84495399d558a1aa1f9207daf8c8a721366e3d0c8244",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892383410",
+      "timestamp": "2026-09-20T08:19:43.410Z",
+      "event": "DEVICE_PASSKEY_AUTHENTICATED",
+      "actor": "Krishnesh",
+      "organization": "TrustChain WebAuthn Enclave",
+      "action": "Hardware passkey challenge confirmed. Identity wallet unlocked.",
+      "txHash": "0x7638e56819b0481812fe6e7d459be19631234d8f25ad2ec3ebba13034981be9c",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892379570",
+      "timestamp": "2026-09-20T08:19:39.570Z",
+      "event": "FACE_LIVENESS_VERIFIED",
+      "actor": "Krishnesh",
+      "organization": "Client Device Enclave",
+      "action": "Live face liveness and anti-spoofing validated locally in browser.",
+      "txHash": "0x52bf80af26e7923db04cf2ba8f586953e6fe410e59ccf7e66fd1ae168a7ed8ca",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892355219",
+      "userId": "usr-1",
+      "bankId": "BANK-HDFC-901",
+      "timestamp": "2026-09-20T08:19:15.219Z",
+      "event": "QR_VERIFICATION_COMPLETED",
+      "actor": "Rajesh Kumar (EMP-4082)",
+      "organization": "HDFC Trust Banking & Credit",
+      "action": "QR Token verified for Priya Sharma. Proof ID: prf-zk-1a0bde5e492",
+      "proofId": "prf-zk-1a0bde5e492",
+      "txHash": "0xa503796bced54dd0d49ef0212a8d4458c2e788e25b5f255fea624520e4ac51fd",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892350692",
+      "userId": "usr-midhun-01",
+      "bankId": "BANK-HDFC-901",
+      "timestamp": "2026-09-20T08:19:10.692Z",
+      "event": "QR_VERIFICATION_COMPLETED",
+      "actor": "Rajesh Kumar (EMP-4082)",
+      "organization": "HDFC Trust Banking & Credit",
+      "action": "QR Token verified for Midhun. Proof ID: prf-zk-1a0bde5d2e3",
+      "proofId": "prf-zk-1a0bde5d2e3",
+      "txHash": "0x2b0ffc89a7b03701636746794ffa984849ffcc19e3e476c8aeebb272246e4be8",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892240778",
+      "timestamp": "2026-09-20T08:17:20.778Z",
+      "event": "DEVICE_PASSKEY_AUTHENTICATED",
+      "actor": "Krishnesh",
+      "organization": "TrustChain WebAuthn Enclave",
+      "action": "Hardware passkey challenge confirmed. Identity wallet unlocked.",
+      "txHash": "0x2e08468e79c45d7200424b3cb86206c37a1e33f3e7ce1fa26064b5cc92a2580a",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892236580",
+      "timestamp": "2026-09-20T08:17:16.580Z",
+      "event": "FACE_LIVENESS_VERIFIED",
+      "actor": "Krishnesh",
+      "organization": "Client Device Enclave",
+      "action": "Live face liveness and anti-spoofing validated locally in browser.",
+      "txHash": "0x63add63cd02ab37ba6ea3ef80bc8d7cde10e8c76b00954754d2235b965857fb5",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892194302",
+      "timestamp": "2026-09-20T08:16:34.302Z",
+      "event": "PASSWORD_RESET_COMPLETED",
+      "actor": "usr-1789892017562-108",
+      "organization": "TrustChain Security",
+      "action": "Password credentials securely reset and re-hashed",
+      "txHash": "0xed342ef85eb30d25ccfd1ba4d47239671f12ca3d8177810c3ba20f11dbd9cdca",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892080683",
+      "timestamp": "2026-09-20T08:14:40.683Z",
+      "event": "DEVICE_PASSKEY_AUTHENTICATED",
+      "actor": "Arif",
+      "organization": "TrustChain WebAuthn Enclave",
+      "action": "Hardware passkey challenge confirmed. Identity wallet unlocked.",
+      "txHash": "0xf7b5ab3ac6660741059e7c8f66325fac1464fc2e9ca780f55d597d2b2a667fa3",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892075542",
+      "timestamp": "2026-09-20T08:14:35.542Z",
+      "event": "FACE_LIVENESS_VERIFIED",
+      "actor": "Arif",
+      "organization": "Client Device Enclave",
+      "action": "Live face liveness and anti-spoofing validated locally in browser.",
+      "txHash": "0x9b59292cce4cb2920bd37662619e32583c95df3613c132ad83af4608cfac913d",
+      "status": "confirmed"
+    },
+    {
+      "id": "audit-1789892017563",
+      "userId": "usr-1789892017562-108",
+      "timestamp": "2026-09-20T08:13:37.563Z",
+      "event": "CITIZEN_ACCOUNT_CREATED",
+      "actor": "Arif",
+      "organization": "TrustChain Sovereign Network",
+      "action": "Self-Sovereign citizen identity enclave created for Arif (mohamedarif55an@gmail.com).",
+      "txHash": "0xfca9fecd037aeb21860eb3025dea43daa03ff80be69616e5300c933304ad307c",
+      "status": "confirmed"
+    },
     {
       "id": "audit-1789817965341",
       "timestamp": "2026-09-19T11:39:25.341Z",
@@ -514,6 +957,51 @@
   ],
   "notifications": [
     {
+      "id": "notif-qr-1789894543926",
+      "userId": "usr-arif-02",
+      "title": "Your QR has been verified successfully.",
+      "message": "Your QR has been verified successfully by HDFC Trust Banking. Sovereign KYC credentials confirmed.",
+      "type": "success",
+      "timestamp": "Just now",
+      "read": false
+    },
+    {
+      "id": "notif-qr-1789894531786",
+      "userId": "usr-1",
+      "title": "Your QR has been verified successfully.",
+      "message": "Your QR has been verified successfully by State Bank of India. Sovereign KYC credentials confirmed.",
+      "type": "success",
+      "timestamp": "Just now",
+      "read": false
+    },
+    {
+      "id": "notif-qr-1789892580814",
+      "userId": "usr-midhun-01",
+      "title": "Your QR has been verified",
+      "message": "Bank verification completed successfully by HDFC Trust Banking & Credit. Sovereign KYC credentials confirmed.",
+      "type": "success",
+      "timestamp": "Just now",
+      "read": false
+    },
+    {
+      "id": "notif-qr-1789892355219",
+      "userId": "usr-1",
+      "title": "Your QR has been verified",
+      "message": "Bank verification completed successfully by HDFC Trust Banking & Credit. Sovereign KYC credentials confirmed.",
+      "type": "success",
+      "timestamp": "Just now",
+      "read": false
+    },
+    {
+      "id": "notif-qr-1789892350692",
+      "userId": "usr-midhun-01",
+      "title": "Your QR has been verified",
+      "message": "Bank verification completed successfully by HDFC Trust Banking & Credit. Sovereign KYC credentials confirmed.",
+      "type": "success",
+      "timestamp": "Just now",
+      "read": false
+    },
+    {
       "id": "notif-01",
       "userId": "usr-arif-02",
       "title": "New Verification Request",
@@ -530,10 +1018,254 @@
       "type": "success",
       "timestamp": "2026-09-11T14:22:00.000Z",
       "read": true
+    },
+    {
+      "id": "notif-usr-1789892017562-108-welcome",
+      "userId": "usr-1789892017562-108",
+      "title": "Welcome to TrustChain Sovereign Identity",
+      "message": "Your account and Zero-Knowledge Identity Passport have been created securely on the blockchain.",
+      "type": "success",
+      "timestamp": "Just now",
+      "read": false
     }
   ],
-  "qrTokens": [],
-  "passwordResetCodes": [],
+  "qrTokens": [
+    {
+      "token": "tc_qr_usr-arif-02_40e65561d4f8f80793c82e0bf9e01b5f",
+      "requestId": "qr-req-1789893010692",
+      "userId": "usr-arif-02",
+      "userName": "Mohamed Arif A",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789893010691",
+      "proofHash": "0xzka220fdc9c6cda7616c15b16cbb744a9ea349e7b8ea020082637f272b55d66335",
+      "txHash": "0x59ac36a8be656e1022f6ac249bbeaa017a34dc66153ba185ff162bb8637f1e6f",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:30:10.692Z",
+      "expiresAt": "2026-09-20T08:45:10.692Z"
+    },
+    {
+      "token": "tc_qr_usr-arif-02_5458a14c85fc5f3dfaaae27a33e807c7",
+      "requestId": "qr-req-1789893010651",
+      "userId": "usr-arif-02",
+      "userName": "Mohamed Arif A",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789893010650",
+      "proofHash": "0xzkb19bd7266fbae529e883351f3150f397f5f53a7d1091fe78f0cc7bd687bfad4f",
+      "txHash": "0x5179767d3c181477a7db28a8606ab040c0820de1fb492ff0d264a1f576d91ead",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:30:10.651Z",
+      "expiresAt": "2026-09-20T08:45:10.651Z"
+    },
+    {
+      "token": "tc_ver_req-01_3dfbefb817c4ed645fa7a98c",
+      "requestId": "req-01",
+      "userId": "usr-arif-02",
+      "userName": "Mohamed Arif A",
+      "bankName": "HDFC Trust Banking",
+      "proofId": "zkp-1789893010447",
+      "proofHash": "0xzk755d1650e1d6030e6d49a47beae862ecfa0fef236c89a0609b920018519fe51b",
+      "txHash": "0x6931a64a4c0221ba0257bee544045a04f2f64758c4dcd5314fed0f7af520a594",
+      "status": "used",
+      "createdAt": "2026-09-20T08:30:10.447Z",
+      "expiresAt": "2026-09-22T08:30:10.447Z",
+      "rejectionReason": "QR token does not belong to this customer.",
+      "verifiedAt": "2026-09-20T08:55:43.925Z",
+      "verifiedBy": "HDFC Trust Banking"
+    },
+    {
+      "token": "tkn-7219-midhun-s-zkp",
+      "userId": "usr-midhun-01",
+      "userName": "Midhun",
+      "userEmail": "midhun@trustchain.id",
+      "userPhone": "+91 98765 43210",
+      "verifier": "Bank Branch Desk",
+      "bankName": "State Bank of India",
+      "claims": [
+        "Age >= 18 Valid (Groth16 ZKP)",
+        "UIDAI e-Sign KYC Active",
+        "Territorial State: Tamil Nadu"
+      ],
+      "proofId": "prf-zk-1a0bde955cd",
+      "txHash": "0x45310a723d1840db590a756e3cfb27097626d0344abd98794fe271a61b7fb162",
+      "status": "used",
+      "createdAt": "2026-09-20T08:23:00.813Z",
+      "expiresAt": "2026-09-21T08:23:00.813Z"
+    },
+    {
+      "token": "tc_qr_usr-arif-02_6fe60ef2a7e4d7f204a99de912891e8a",
+      "requestId": "qr-req-1789892446413",
+      "userId": "usr-arif-02",
+      "userName": "Mohamed Arif A",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789892446412",
+      "proofHash": "0xzk52095736cc3690979b7bd43fca4873b3f0ea75159d17f80dc1c6ac8f80be7faa",
+      "txHash": "0x73df1bba6cf223276284b352001ff7a14a346f3c89f930c4a9144511eb1cce78",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:20:46.413Z",
+      "expiresAt": "2026-09-20T08:35:46.413Z"
+    },
+    {
+      "token": "tc_qr_usr-arif-02_be6dd6116aea59c7a3258785ee1db07d",
+      "requestId": "qr-req-1789892446378",
+      "userId": "usr-arif-02",
+      "userName": "Mohamed Arif A",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789892446377",
+      "proofHash": "0xzkc4879176d6a37870aac625c8feeb999553c6b4590bcba1c7c94ad31aea927a0e",
+      "txHash": "0x551e723225507e609965755ded55ed1ae7da52a3f336aebc1501090dea1dfc22",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:20:46.378Z",
+      "expiresAt": "2026-09-20T08:35:46.378Z"
+    },
+    {
+      "token": "tc_qr_usr-krishnesh-04_6d4c3cd0be1359d953e8216241a6a4b4",
+      "requestId": "qr-req-1789892393025",
+      "userId": "usr-krishnesh-04",
+      "userName": "Krishnesh",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789892393024",
+      "proofHash": "0xzke6c2c70779c2325f9e8ae127f9855f254c12e505af4d0f689ee07a0b0640cab4",
+      "txHash": "0x91b3cede285af1a1cff3e64058377bc48a442c4c511c3e1d550ff1e88893e53e",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:19:53.025Z",
+      "expiresAt": "2026-09-20T08:34:53.025Z"
+    },
+    {
+      "token": "tc_qr_usr-krishnesh-04_bfb450e1ad2e78a28c7b8066ca65495d",
+      "requestId": "qr-req-1789892392990",
+      "userId": "usr-krishnesh-04",
+      "userName": "Krishnesh",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789892392990",
+      "proofHash": "0xzk04350357bd3030d4a0abff15f0851445b4d9d8507da051baf50f77ae8fa7f908",
+      "txHash": "0x401ce59a520c40c99c63d822d2b60443f8f1b036099ca7794125e78b82e265b8",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:19:52.990Z",
+      "expiresAt": "2026-09-20T08:34:52.990Z"
+    },
+    {
+      "token": "tkn-4128-priya-sharma-zkp",
+      "userId": "usr-1",
+      "userName": "Priya Sharma",
+      "userEmail": "priya.sharma@example.com",
+      "userPhone": "+91 98234 56789",
+      "verifier": "Bank Branch Desk",
+      "bankName": "State Bank of India",
+      "claims": [
+        "Age >= 18 Valid (Groth16 ZKP)",
+        "UIDAI e-Sign KYC Active",
+        "Territorial State: Tamil Nadu"
+      ],
+      "proofId": "zkp-1789894531785",
+      "txHash": "0xa503796bced54dd0d49ef0212a8d4458c2e788e25b5f255fea624520e4ac51fd",
+      "status": "used",
+      "createdAt": "2026-09-20T08:19:15.218Z",
+      "expiresAt": "2026-09-21T08:19:15.218Z",
+      "rejectionReason": "Required credential/proof is missing.",
+      "proofHash": "0xzk5ae6b693b61d3d56d1370a309659a170004c20071c4a7a3fd2736b9d4d71e285",
+      "verifiedAt": "2026-09-20T08:55:31.786Z",
+      "verifiedBy": "State Bank of India"
+    },
+    {
+      "token": "tkn-9841-mohamed-arif-zkp",
+      "userId": "usr-midhun-01",
+      "userName": "Midhun",
+      "userEmail": "midhun@trustchain.id",
+      "userPhone": "+91 98765 43210",
+      "verifier": "Bank Branch Desk",
+      "bankName": "State Bank of India",
+      "claims": [
+        "Age >= 18 Valid (Groth16 ZKP)",
+        "UIDAI e-Sign KYC Active",
+        "Territorial State: Tamil Nadu"
+      ],
+      "proofId": "prf-zk-1a0bde5d2e3",
+      "txHash": "0x2b0ffc89a7b03701636746794ffa984849ffcc19e3e476c8aeebb272246e4be8",
+      "status": "used",
+      "createdAt": "2026-09-20T08:19:10.691Z",
+      "expiresAt": "2026-09-21T08:19:10.691Z"
+    },
+    {
+      "token": "tc_qr_usr-krishnesh-04_0acebb9cb8930723a8e68d94ceb77ef9",
+      "requestId": "qr-req-1789892307002",
+      "userId": "usr-krishnesh-04",
+      "userName": "Krishnesh",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789892307002",
+      "proofHash": "0xzk4b97d74c1886d18bce8441811ee7879caee765258153fb4fd342213ec3c3cd36",
+      "txHash": "0x924129c67c72c0b5870513462fcad318489db3f29b417d856f41a7eea0d918cc",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:18:27.002Z",
+      "expiresAt": "2026-09-20T08:33:27.002Z"
+    },
+    {
+      "token": "tc_qr_usr-krishnesh-04_67c619cda4b2a571f2fefd79a644f44d",
+      "requestId": "qr-req-1789892299111",
+      "userId": "usr-krishnesh-04",
+      "userName": "Krishnesh",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789892299111",
+      "proofHash": "0xzkcf9d9423caf649aa2401ab903a7ba322a78ac3e1a6c69941aec05268c5a3ab69",
+      "txHash": "0x0c10018a5c15b319f60a03e64d0d4086a81feca881c0371afb919763262a5791",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:18:19.111Z",
+      "expiresAt": "2026-09-20T08:33:19.111Z"
+    },
+    {
+      "token": "tc_qr_usr-krishnesh-04_f31f43990a3b0c78c0bcfc4c0054889e",
+      "requestId": "qr-req-1789892299053",
+      "userId": "usr-krishnesh-04",
+      "userName": "Krishnesh",
+      "bankName": "Bank Verification Desk",
+      "proofId": "zkp-1789892299053",
+      "proofHash": "0xzk4f15d53593269d909f0f815deefa2e513135e8f2ddd47a60c86be2b4ab7a2304",
+      "txHash": "0xb79ca56530fc9aaf8d5448332322eda4b78a469605e1d8fbfecab5ce10e5d021",
+      "status": "valid",
+      "createdAt": "2026-09-20T08:18:19.053Z",
+      "expiresAt": "2026-09-20T08:33:19.053Z"
+    },
+    {
+      "token": "tkn-9841-mohamed-arif-a-zkp",
+      "requestId": "req-01",
+      "userId": "usr-arif-02",
+      "userName": "Mohamed Arif A",
+      "bankName": "HDFC Trust Banking",
+      "claims": [
+        "Age >= 18 Valid (Groth16 ZKP)",
+        "Govt. UIDAI e-Sign KYC Active"
+      ],
+      "expiresAt": "2026-09-21T08:53:20.332Z",
+      "status": "valid",
+      "proofId": "zkp-proof-01",
+      "proofHash": "0xzk7a9e14c382f9d50b71e843fa2948b301",
+      "txHash": "0x9482bf7a83d09e3a7c6419d854e76a0b91d84f",
+      "createdAt": "2026-09-20T08:53:20.332Z"
+    },
+    {
+      "token": "tkn-3382-kishore-zkp",
+      "requestId": "req-03",
+      "userId": "usr-kishore-03",
+      "userName": "Kishore",
+      "bankName": "HDFC Trust Banking",
+      "claims": [
+        "Age >= 18 Valid (Groth16 ZKP)",
+        "Govt. UIDAI e-Sign KYC Active"
+      ],
+      "expiresAt": "2026-09-21T08:53:20.332Z",
+      "status": "valid",
+      "proofId": "zkp-proof-kishore",
+      "proofHash": "0xzk7841bc90aef4316d28905b7610fa789c",
+      "txHash": "0x5512bf7a83d09e3a7c6419d854e76a0b91d84f",
+      "createdAt": "2026-09-20T08:53:20.332Z"
+    }
+  ],
+  "passwordResetCodes": [
+    {
+      "contact": "mohamedarif55an@gmail.com",
+      "code": "830955",
+      "expiresAt": 1789893035039
+    }
+  ],
   "passkeys": [
     {
       "id": "passkey-1789485679232",

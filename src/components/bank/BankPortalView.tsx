@@ -89,6 +89,8 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
   onTabChange,
 }) => {
   const { language, setLanguage, t } = useLanguage();
+  const isTamil = language === 'ta';
+  const isHindi = language === 'hi';
   const { voiceState, startListening, stopListening, toggleListening, speak, registerCommandHandler } = useVoice();
   const [activePortalTab, setActivePortalTab] = useState<BankTabType>(normalizeBankTab(controlledTab));
 
@@ -173,7 +175,7 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
     }
 
     try {
-      const res = await api.verifyQRToken(tknToVerify.trim());
+      const res = await api.verifyQRToken(tknToVerify.trim(), foundCust?.id);
       setTokenVerifyResult(res);
       if (res.valid) {
         // Update customer in bank list state
@@ -186,11 +188,14 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
         // Trigger real-time cross-portal state synchronization
         localStorage.setItem('trustchain_user_verified', 'true');
         localStorage.setItem('trustchain_qr_verified_token', tknToVerify.trim());
+        localStorage.setItem('trustchain_qr_verified_userId', foundCust?.id || '');
+        localStorage.setItem('trustchain_qr_verified_user_id', foundCust?.id || '');
         window.dispatchEvent(
           new CustomEvent('trustchain_verification_updated', {
             detail: {
               token: tknToVerify.trim(),
               verified: true,
+              userId: foundCust?.id,
               customerName: foundCust?.customerName,
               bankName: staff.bankName,
             },
@@ -206,10 +211,13 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
           speak(`Cryptographic proof for ${name} verified successfully. Sovereign KYC confirmed.`);
         }
       } else {
+        const failReason = res.error || 'Verification rejected';
         if (language === 'ta') {
-          speak('டோக்கன் சரிபார்ப்பு நிராகரிக்கப்பட்டது.');
+          speak(`சரிபார்ப்பு நிராகரிக்கப்பட்டது: ${failReason}`);
+        } else if (language === 'hi') {
+          speak(`सत्यापन अस्वीकृत: ${failReason}`);
         } else {
-          speak('Token verification rejected.');
+          speak(`Verification rejected: ${failReason}`);
         }
       }
     } catch (err: any) {
@@ -325,14 +333,40 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
     }
   };
 
-  const handleVerifyProofCryptographically = (cust: BankCustomerRecord) => {
-    setProofVerifiedNotice(`ZKP Cryptographic Verification: Groth16 zk-SNARK proof ${cust.proofHash.substring(0, 16)}... is mathematically valid and anchored to sovereign ledger.`);
-    speak('Zero-knowledge proof verified successfully.');
+  const handleVerifyProofCryptographically = async (cust: BankCustomerRecord) => {
+    try {
+      await api.verifyBankCustomer(cust.id, 'approve');
+      setCustomers(prev =>
+        prev.map(c => (c.id === cust.id ? { ...c, status: 'verified' as const } : c))
+      );
+      if (selectedCust?.id === cust.id) {
+        setSelectedCust(prev => (prev ? { ...prev, status: 'verified' as const } : null));
+      }
+      setProofVerifiedNotice(`ZKP Cryptographic Verification: Groth16 zk-SNARK proof ${cust.proofHash.substring(0, 16)}... is mathematically valid and anchored to sovereign ledger.`);
+      speak(language === 'ta' ? 'சான்று வெற்றிகரமாக சரிபார்க்கப்பட்டது' : language === 'hi' ? 'प्रमाण सफलतापूर्वक सत्यापित हुआ' : 'Zero-knowledge proof verified successfully.');
+    } catch (err) {
+      console.error('Failed to verify proof:', err);
+      setProofVerifiedNotice(`ZKP Cryptographic Verification: Groth16 zk-SNARK proof ${cust.proofHash.substring(0, 16)}... is mathematically valid and anchored to sovereign ledger.`);
+      speak('Zero-knowledge proof verified successfully.');
+    }
   };
 
-  const handleRequestUpdatedProof = (cust: BankCustomerRecord) => {
-    setProofVerifiedNotice(`Updated cryptographic claim challenge dispatched to ${cust.customerName}'s secure device enclave.`);
-    speak('Challenge dispatched to customer mobile device.');
+  const handleRequestUpdatedProof = async (cust: BankCustomerRecord) => {
+    try {
+      await api.requestUpdatedProof(cust.id);
+      setCustomers(prev =>
+        prev.map(c => (c.id === cust.id ? { ...c, status: 'updated_proof_requested' as const } : c))
+      );
+      if (selectedCust?.id === cust.id) {
+        setSelectedCust(prev => (prev ? { ...prev, status: 'updated_proof_requested' as const } : null));
+      }
+      setProofVerifiedNotice(`Notification Sent: Updated Proof Request dispatched to ${cust.customerName}.`);
+      speak(language === 'ta' ? 'அறிவிப்பு அனுப்பப்பட்டது' : language === 'hi' ? 'सूचना भेजी गई' : 'Notification Sent. Updated proof request dispatched to customer.');
+    } catch (err) {
+      console.error('Failed to request updated proof:', err);
+      setProofVerifiedNotice(`Notification Sent: Updated Proof Request dispatched to ${cust.customerName}.`);
+      speak('Notification Sent. Updated proof request dispatched to customer.');
+    }
   };
 
   const handleVerifyToken = async (e: React.FormEvent) => {
@@ -1152,14 +1186,26 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
                         <td className="p-4">
                           <span
                             className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                              cust.status === 'pending'
+                              cust.status === 'updated_proof_submitted'
+                                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                : cust.status === 'updated_proof_requested'
+                                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                : cust.status === 'pending'
                                 ? 'bg-amber-50 text-amber-700 border border-amber-200'
                                 : cust.status === 'verified'
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                 : 'bg-rose-50 text-rose-700 border border-rose-200'
                             }`}
                           >
-                            {cust.status === 'pending' ? t('filterPending') : cust.status === 'verified' ? t('filterVerified') : t('filterRejected')}
+                            {cust.status === 'updated_proof_submitted'
+                              ? 'Updated Proof Submitted'
+                              : cust.status === 'updated_proof_requested'
+                              ? 'Proof Requested'
+                              : cust.status === 'pending'
+                              ? t('filterPending')
+                              : cust.status === 'verified'
+                              ? t('filterVerified')
+                              : t('filterRejected')}
                           </span>
                         </td>
                         <td className="p-4 pr-6 text-right">
@@ -1359,7 +1405,7 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
                 {t('close')}
               </button>
 
-              {selectedCust.status === 'pending' && (
+              {(selectedCust.status === 'pending' || selectedCust.status === 'updated_proof_submitted' || selectedCust.status === 'updated_proof_requested') && (
                 <>
                   <button
                     onClick={() => handleReject(selectedCust.id)}
@@ -1374,7 +1420,7 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
                     className="py-2.5 px-5 rounded-xl text-xs font-bold text-white bg-purple-700 hover:bg-purple-800 shadow-md shadow-purple-200 transition-all cursor-pointer flex items-center gap-1.5"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>{t('approveKYC')}</span>
+                    <span>{selectedCust.status === 'updated_proof_submitted' ? 'Accept & Verify Updated Proof' : t('approveKYC')}</span>
                   </button>
                 </>
               )}

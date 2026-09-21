@@ -60,6 +60,8 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const recognitionRef = useRef<any>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const silenceTimerRef = useRef<any>(null);
   const commandHandlersRef = useRef<Array<(command: string) => boolean | void>>([]);
   const lastSpokenTextRef = useRef<string>('');
   const isFirstMountRef = useRef<boolean>(true);
@@ -217,6 +219,14 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const closeMic = useCallback(() => {
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
+    }
     if (recognitionRef.current) {
       try {
         recognitionRef.current.abort();
@@ -249,12 +259,13 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         ...prev,
         isListening: false,
         isProcessing: false,
+        supported: false,
         errorMessage:
           language === 'ta'
-            ? 'உங்கள் உலாவியில் குரல் அறிதல் ஆதரிக்கப்படவில்லை.'
+            ? 'உங்கள் உலாவியில் குரல் அறிதல் ஆதரிக்கப்படவில்லை. Google Chrome அல்லது Safari உலாவியைப் பயன்படுத்தவும்.'
             : language === 'hi'
-            ? 'ब्राउज़र में आवाज़ पहचान समर्थित नहीं है।'
-            : 'Speech recognition is not supported in this browser.',
+            ? 'ब्राउज़र में आवाज़ पहचान समर्थित नहीं है। कृपया Google Chrome या Safari का उपयोग करें।'
+            : 'Speech recognition is not supported in this browser. Please use Google Chrome or Safari.',
       }));
       return;
     }
@@ -265,7 +276,7 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         window.speechSynthesis.cancel();
       }
 
-      // 2. If already listening, abort previous instance cleanly
+      // 2. Abort previous instance if any
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();
@@ -274,41 +285,46 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
       }
 
-      // 3. Check / request real browser microphone permission if not yet granted
-      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
-        let alreadyGranted = false;
-        if (navigator.permissions && navigator.permissions.query) {
-          try {
-            const status = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-            if (status.state === 'granted') {
-              alreadyGranted = true;
-            }
-          } catch {
-            // Permission query unsupported, proceed to request
-          }
-        }
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
 
-        if (!alreadyGranted) {
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            stream.getTracks().forEach(track => track.stop());
-            setVoiceState(prev => ({ ...prev, isMicBlocked: false }));
-          } catch (micErr: any) {
-            console.warn('Microphone permission request status:', micErr);
-            if (micErr.name === 'NotAllowedError' || micErr.name === 'PermissionDeniedError') {
-              setVoiceState(prev => ({
-                ...prev,
-                isListening: false,
-                isProcessing: false,
-                errorMessage:
-                  language === 'ta'
-                    ? 'மைக்ரோஃபோன் அனுமதி தேவை. தயவுசெய்து உலாவியில் அனுமதிக்கவும்.'
-                    : language === 'hi'
-                    ? 'माइक्रोफ़ोन अनुमति अस्वीकृत। कृपया ब्राउज़र में अनुमति दें।'
-                    : 'Microphone permission denied. Please allow access in your browser.',
-              }));
-              return;
-            }
+      // 3. Check / request real device microphone permission & keep active stream
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaStreamRef.current = stream;
+          setVoiceState(prev => ({ ...prev, isMicBlocked: false }));
+        } catch (micErr: any) {
+          console.warn('Microphone permission request status:', micErr);
+          if (micErr.name === 'NotAllowedError' || micErr.name === 'PermissionDeniedError') {
+            setVoiceState(prev => ({
+              ...prev,
+              isListening: false,
+              isProcessing: false,
+              isMicBlocked: true,
+              errorMessage:
+                language === 'ta'
+                  ? 'மைக்ரோஃபோன் அனுமதி மறுக்கப்பட்டது. தயவுசெய்து உலாவியில் அனுமதிக்கவும்.'
+                  : language === 'hi'
+                  ? 'माइक्रोफ़ोन अनुमति अस्वीकृत। कृपया ब्राउज़र में अनुमति दें।'
+                  : 'Microphone permission denied. Please allow access in your browser.',
+            }));
+            return;
+          } else {
+            setVoiceState(prev => ({
+              ...prev,
+              isListening: false,
+              isProcessing: false,
+              errorMessage:
+                language === 'ta'
+                  ? 'மைக்ரோஃபோன் அணுகல் தோல்வியடைந்தது. அமைப்புகளை சரிபார்க்கவும்.'
+                  : language === 'hi'
+                  ? 'माइक्रोफ़ोन एक्सेस विफल। कृपया सेटिंग्स जांचें।'
+                  : 'Microphone access failed. Please check device settings.',
+            }));
+            return;
           }
         }
       }
@@ -316,13 +332,59 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // 4. Create single-shot SpeechRecognition instance
       const recognition = new SpeechRecognitionAPI();
       recognitionRef.current = recognition;
-      recognition.continuous = false; // Never continuously listen; single-shot utterance capture
+      recognition.continuous = false;
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
 
       // Select proper recognition locale: English -> en-IN, Tamil -> ta-IN, Hindi -> hi-IN
       const recognitionLang = language === 'ta' ? 'ta-IN' : language === 'hi' ? 'hi-IN' : 'en-IN';
       recognition.lang = recognitionLang;
+
+      let hasProcessed = false;
+      let latestTranscript = '';
+
+      const triggerCommand = (text: string) => {
+        if (hasProcessed) return;
+        const trimmed = text.trim();
+        if (!trimmed) return;
+        hasProcessed = true;
+
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+        }
+
+        setVoiceState(prev => ({ ...prev, isProcessing: true, recognizedText: trimmed }));
+
+        try {
+          recognition.stop();
+        } catch {
+          // ignore
+        }
+
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach(track => track.stop());
+          mediaStreamRef.current = null;
+        }
+
+        // Execute matching command action
+        processCommand(trimmed);
+
+        setTimeout(() => {
+          setVoiceState(prev => ({
+            ...prev,
+            isListening: false,
+            isProcessing: false,
+          }));
+        }, 400);
+
+        setTimeout(() => {
+          setVoiceState(prev => ({
+            ...prev,
+            recognizedText: '',
+          }));
+        }, 3200);
+      };
 
       recognition.onstart = () => {
         setVoiceState(prev => ({
@@ -349,44 +411,30 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
 
         const currentText = (finalTranscript || interimTranscript).trim();
-        setVoiceState(prev => ({ ...prev, recognizedText: currentText }));
+        if (currentText) {
+          latestTranscript = currentText;
+          setVoiceState(prev => ({ ...prev, recognizedText: currentText }));
+        }
 
-        // When user finishes speaking the utterance
         if (finalTranscript && finalTranscript.trim()) {
-          const commandText = finalTranscript.trim();
-          setVoiceState(prev => ({ ...prev, isProcessing: true, recognizedText: commandText }));
-          
-          // Stop recognition cleanly
-          try {
-            recognition.stop();
-          } catch {
-            // ignore
-          }
-
-          // Execute matching command action
-          processCommand(commandText);
-
-          // Return to normal microphone state cleanly
-          setTimeout(() => {
-            setVoiceState(prev => ({
-              ...prev,
-              isListening: false,
-              isProcessing: false,
-            }));
-          }, 400);
-
-          // Clear recognized text after brief delay so user can verify what was recognized
-          setTimeout(() => {
-            setVoiceState(prev => ({
-              ...prev,
-              recognizedText: '',
-            }));
-          }, 3200);
+          triggerCommand(finalTranscript.trim());
+        } else if (currentText.length > 2) {
+          if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = setTimeout(() => {
+            if (latestTranscript) {
+              triggerCommand(latestTranscript);
+            }
+          }, 1200);
         }
       };
 
       recognition.onerror = (event: any) => {
         console.warn('Speech recognition event status:', event.error);
+
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach(track => track.stop());
+          mediaStreamRef.current = null;
+        }
 
         if (event.error === 'no-speech' || event.error === 'aborted') {
           setVoiceState(prev => ({
@@ -403,12 +451,28 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             ...prev,
             isListening: false,
             isProcessing: false,
+            isMicBlocked: true,
             errorMessage:
               language === 'ta'
                 ? 'மைக்ரோஃபோன் அனுமதி தேவை. உலாவியில் அனுமதிக்கவும்.'
                 : language === 'hi'
                 ? 'माइक्रोफ़ोन अनुमति आवश्यक है।'
                 : 'Microphone permission required.',
+          }));
+          return;
+        }
+
+        if (event.error === 'audio-capture') {
+          setVoiceState(prev => ({
+            ...prev,
+            isListening: false,
+            isProcessing: false,
+            errorMessage:
+              language === 'ta'
+                ? 'மைக்ரோஃபோன் கிடைக்கவில்லை. சாதன அமைப்பை சரிபார்க்கவும்.'
+                : language === 'hi'
+                ? 'माइक्रोफ़ोन उपलब्ध नहीं है।'
+                : 'Microphone capture failed. Please check device settings.',
           }));
           return;
         }
@@ -422,11 +486,20 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       };
 
       recognition.onend = () => {
-        setVoiceState(prev => ({
-          ...prev,
-          isListening: false,
-          isProcessing: false,
-        }));
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach(track => track.stop());
+          mediaStreamRef.current = null;
+        }
+
+        if (!hasProcessed && latestTranscript && latestTranscript.trim()) {
+          triggerCommand(latestTranscript.trim());
+        } else {
+          setVoiceState(prev => ({
+            ...prev,
+            isListening: false,
+            isProcessing: false,
+          }));
+        }
       };
 
       try {
@@ -438,6 +511,10 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     } catch (err: any) {
       console.warn('Failed to start speech recognition', err);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+        mediaStreamRef.current = null;
+      }
       setVoiceState(prev => ({
         ...prev,
         isListening: false,
@@ -447,6 +524,14 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [language, processCommand]);
 
   const stopListening = useCallback(() => {
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
+    }
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
@@ -473,27 +558,30 @@ export const VoiceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         errorMessage: null,
       }));
 
-      // Directly activate speech recognition
-      await startListening();
-
-      // Also trigger browser prompt if available
       if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
-        navigator.mediaDevices
-          .getUserMedia({ audio: true })
-          .then(stream => {
-            stream.getTracks().forEach(track => track.stop());
-            setVoiceState(prev => ({ ...prev, isMicBlocked: false }));
-          })
-          .catch(e => {
-            console.warn('Browser getUserMedia check result:', e);
-          });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        setVoiceState(prev => ({ ...prev, isMicBlocked: false, errorMessage: null }));
+        return true;
       }
       return true;
     } catch (err: any) {
       console.warn('Microphone permission request failed:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setVoiceState(prev => ({
+          ...prev,
+          isMicBlocked: true,
+          errorMessage:
+            language === 'ta'
+              ? 'மைக்ரோஃபோன் அனுமதி மறுக்கப்பட்டது. உலாவியில் அனுமதிக்கவும்.'
+              : language === 'hi'
+              ? 'माइक्रोफ़ोन अनुमति अस्वीकृत। कृपया ब्राउज़र में अनुमति दें।'
+              : 'Microphone permission denied. Please allow access in your browser.',
+        }));
+      }
       return false;
     }
-  }, [startListening]);
+  }, [language]);
 
   const clearError = useCallback(() => {
     setVoiceState(prev => ({ ...prev, errorMessage: null, isMicBlocked: false }));

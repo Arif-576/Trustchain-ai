@@ -316,6 +316,44 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
         );
       })()}
 
+      {/* Customer Portal Top Navigation Tabs - Streamlined Scrollable Strip & Responsive Toolbar */}
+      <div className="relative w-full" id="customer-portal-top-tabs-container">
+        <div
+          id="customer-portal-top-tabs-bar"
+          className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-xs overflow-x-auto scrollbar-none snap-x"
+        >
+          {navTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                id={`customer-top-tab-${tab.id}-btn`}
+                type="button"
+                onClick={() => switchTab(tab.id)}
+                className={`shrink-0 snap-start flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs md:text-sm font-semibold sm:font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                    : 'bg-white text-slate-600 hover:bg-slate-100/80 border border-slate-200/80 hover:text-slate-900'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span>{tab.label}</span>
+                {tab.badge !== undefined && (
+                  <span
+                    className={`ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                      isActive ? 'bg-white text-indigo-700' : 'bg-rose-500 text-white'
+                    }`}
+                  >
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Multilingual Voice Guide Banner with interactive Listen & Speech controls for this specific page */}
       <PageVoiceGuideBanner pageKey={`customer_${activeTab}`} />
 
