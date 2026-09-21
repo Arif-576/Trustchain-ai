@@ -278,3 +278,33 @@ export interface FraudAlert {
   status: 'Active' | 'Investigating' | 'Customer Verification Requested' | 'Escalated' | 'Resolved';
   resolutionNotes?: string;
 }
+
+export type TransactionDecisionOutcome = 'ALLOW' | 'EXTRA_VERIFICATION' | 'BLOCK';
+
+export interface LiveTransactionDecision {
+  id: string;
+  userId: string;
+  userName: string;
+  bankId: string;
+  bankName: string;
+  serviceType: 'loan' | 'kyc' | 'insurance' | 'passport' | 'account_opening' | 'high_value_transfer' | string;
+  serviceName: string;
+  serviceReason: string;
+  dataRequested: string[];
+  minimumDataToProve: string[];
+  notExposed: string[];
+  privacyImpact: 'Low' | 'Medium' | 'High';
+  trustAIRisk: 'Low' | 'Medium' | 'High';
+  credentialStatus: 'Active' | 'Expired' | 'Revoked';
+  consentStatus: 'Valid' | 'Expired' | 'Revoked';
+  decision: TransactionDecisionOutcome;
+  decisionReason: string;
+  status: 'pending' | 'approved' | 'rejected';
+  verifiedAttributes: string[];
+  protectedHiddenAttributes: string[];
+  proofId?: string;
+  proofHash?: string;
+  txHash?: string;
+  timestamp: string;
+  auditRef: string;
+}

@@ -1294,6 +1294,34 @@ apiRouter.post('/bank/requests/create', (req: Request, res: Response) => {
     expiresAt: new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString(),
   });
 
+  // Also create a Live Transaction Identity Decision record for this verification
+  db.createLiveTransactionDecision({
+    userId: customer.id,
+    userName: customer.name,
+    bankId: staff.bankId,
+    bankName: staff.bankName,
+    serviceName: purpose || 'Customer Identity Verification',
+    serviceType: purpose?.toLowerCase().includes('loan') ? 'loan' : purpose?.toLowerCase().includes('insurance') ? 'insurance' : purpose?.toLowerCase().includes('passport') ? 'passport' : 'account_opening',
+    serviceReason: `Mandatory identity and eligibility check for ${purpose || 'Banking Services'} with minimal data disclosure.`,
+    dataRequested: requestedAttributes || ['KYC Verified Claim', 'Age Above 18 (ZKP)'],
+    minimumDataToProve: [
+      'Zero-Knowledge Proof: Age >= 18 satisfied without raw date of birth',
+      'Self-Sovereign Identity Signature verified on TrustChain ledger',
+      'UIDAI Aadhaar Token authenticated via Cryptographic Vault'
+    ],
+    notExposed: ['Raw 12-digit Aadhaar Number', 'Full Street Address', 'Exact Date of Birth', 'Document Scans'],
+    privacyImpact: analysis.riskLevel === 'HIGH' ? 'High' : analysis.riskLevel === 'MEDIUM' ? 'Medium' : 'Low',
+    trustAIRisk: analysis.riskLevel === 'HIGH' ? 'High' : analysis.riskLevel === 'MEDIUM' ? 'Medium' : 'Low',
+    credentialStatus: 'Active',
+    consentStatus: 'Valid',
+    decision: analysis.riskLevel === 'HIGH' ? 'BLOCK' : analysis.riskLevel === 'MEDIUM' ? 'EXTRA_VERIFICATION' : 'ALLOW',
+    decisionReason: `Real-time AI assessment completed (${analysis.riskScore}/100). Minimum verifiable attributes requested to prevent exposure of raw documents.`,
+    status: 'pending',
+    verifiedAttributes: ['Self-Sovereign DID', 'Cryptographic Token Authenticity'],
+    protectedHiddenAttributes: ['Raw Aadhaar Number', 'Permanent Residential Address', 'Date of Birth (Protected by ZKP)'],
+    proofId: `zkp-tx-${Date.now().toString(36)}`,
+  });
+
   db.addAuditLog({
     id: `audit-${Date.now()}`,
     timestamp: new Date().toISOString(),
@@ -1413,7 +1441,7 @@ apiRouter.post('/bank/request-updated-proof', (req: Request, res: Response) => {
   db.requestUpdatedProofForUser(customer.id);
 
   // Send notification to this exact customer
-  db.createNotification({
+  db.addNotification({
     id: `notif-proof-${Date.now()}`,
     userId: customer.id,
     title: 'Updated Proof Required',
@@ -1424,8 +1452,7 @@ apiRouter.post('/bank/request-updated-proof', (req: Request, res: Response) => {
   });
 
   // Create verification request for this customer
-  const newReq = db.createRequest({
-    id: `req-proof-update-${Date.now()}`,
+  const newReq = db.createVerificationRequest({
     userId: customer.id,
     bankId: staff.bankId || 'bank-sbi',
     bankName: staff.bankName || 'State Bank of India',
@@ -1433,7 +1460,6 @@ apiRouter.post('/bank/request-updated-proof', (req: Request, res: Response) => {
     requestedAttributes: ['Age >= 18 Valid (Groth16 ZKP)', 'UIDAI e-Sign KYC Active', 'Territorial State Jurisdiction'],
     requestedProof: 'zkp-identity-update',
     status: 'pending',
-    createdAt: new Date().toISOString(),
   });
 
   db.addAuditLog({
@@ -1489,7 +1515,7 @@ apiRouter.post('/customer/submit-updated-proof', async (req: Request, res: Respo
   });
 
   // Confirmation notification for customer
-  db.createNotification({
+  db.addNotification({
     id: `notif-proof-submitted-${Date.now()}`,
     userId: user.id,
     title: 'Updated Proof Submitted Successfully',
@@ -1995,4 +2021,210 @@ Rules:
     suggestedAction,
     timestamp: new Date().toISOString(),
   });
+});
+
+// ==========================================
+// LIVE TRANSACTION IDENTITY DECISION ENGINE
+// ==========================================
+
+// Get live transactions (filtered by user if customer, all if bank staff)
+apiRouter.get('/live-transactions', (req: Request, res: Response) => {
+  const staff = getAuthStaff(req);
+  const user = getAuthUser(req);
+
+  if (staff) {
+    return res.json(db.getAllLiveTransactionDecisions());
+  }
+  if (user) {
+    return res.json(db.getLiveTransactionDecisionsForUser(user.id));
+  }
+
+  // Fallback for demo session: return for active/first citizen
+  const allUsers = db.getAllCustomers();
+  const defaultUser = allUsers[0] || { id: 'usr-midhun-01' };
+  return res.json(db.getLiveTransactionDecisionsForUser(defaultUser.id));
+});
+
+// Get single live transaction by ID
+apiRouter.get('/live-transactions/:id', (req: Request, res: Response) => {
+  const item = db.getLiveTransactionDecisionById(req.params.id);
+  if (!item) return res.status(404).json({ error: 'Transaction decision not found' });
+  return res.json(item);
+});
+
+// Bank Manager creates a Live Transaction Verification request
+apiRouter.post('/live-transactions', (req: Request, res: Response) => {
+  const staff = getAuthStaff(req);
+  const {
+    userId,
+    customerName,
+    serviceType,
+    serviceName,
+    serviceReason,
+    dataRequested,
+    minimumDataToProve,
+    notExposed,
+    privacyImpact,
+    trustAIRisk,
+    credentialStatus,
+    consentStatus,
+    verifiedAttributes,
+    protectedHiddenAttributes,
+  } = req.body;
+
+  if (!userId || !serviceName) {
+    return res.status(400).json({ error: 'userId and serviceName are required' });
+  }
+
+  const targetUser = db.findUserById(userId);
+  const finalUserName = customerName || (targetUser ? targetUser.name : 'Citizen');
+  const bankName = staff?.bankName || 'State Bank of India (SBI)';
+  const bankId = staff?.bankId || 'bank-sbi';
+
+  const finalCredStatus = credentialStatus || (targetUser?.kycStatus === 'verified' ? 'Active' : 'Expired');
+  const finalConsentStatus = consentStatus || 'Valid';
+  const finalTrustAIRisk = trustAIRisk || (targetUser?.privacyScore && targetUser.privacyScore < 60 ? 'High' : targetUser?.privacyScore && targetUser.privacyScore < 80 ? 'Medium' : 'Low');
+  const finalPrivacyImpact = privacyImpact || 'Low';
+
+  // DECISION ENGINE:
+  // After checking existing TrustChain credentials, consent and proofs, determine outcome:
+  // ALLOW: All required verification conditions are satisfied.
+  // EXTRA VERIFICATION: Additional verification is required.
+  // BLOCK: Proof, credential, consent, or security condition is invalid.
+  let decision: 'ALLOW' | 'EXTRA_VERIFICATION' | 'BLOCK' = 'ALLOW';
+  let decisionReason = 'All required verification conditions are satisfied.';
+
+  if (finalCredStatus === 'Revoked' || finalConsentStatus === 'Revoked' || finalTrustAIRisk === 'High') {
+    decision = 'BLOCK';
+    decisionReason = 'Proof, credential, consent, or security condition is invalid.';
+  } else if (finalCredStatus === 'Expired' || finalConsentStatus === 'Expired' || finalPrivacyImpact === 'High') {
+    decision = 'EXTRA_VERIFICATION';
+    decisionReason = 'Additional verification is required.';
+  }
+
+  const newDecision = db.createLiveTransactionDecision({
+    userId,
+    userName: finalUserName,
+    bankId,
+    bankName,
+    serviceType: serviceType || 'loan',
+    serviceName,
+    serviceReason: serviceReason || `Verify eligibility for ${serviceName} without exposing unrelated personal information.`,
+    dataRequested: Array.isArray(dataRequested) && dataRequested.length > 0
+      ? dataRequested
+      : ['KYC Verified Status', 'Age >= 18 Confirmation', 'Employment / Income Standing'],
+    minimumDataToProve: Array.isArray(minimumDataToProve) && minimumDataToProve.length > 0
+      ? minimumDataToProve
+      : ['✓ Cryptographic e-KYC Validity', '✓ ZK Age Predicate (Age >= 18)'],
+    notExposed: Array.isArray(notExposed) && notExposed.length > 0
+      ? notExposed
+      : ['Full Date of Birth', 'Raw Aadhaar & PAN Numbers', 'Full Residential Address', 'Raw Documents'],
+    privacyImpact: finalPrivacyImpact,
+    trustAIRisk: finalTrustAIRisk,
+    credentialStatus: finalCredStatus,
+    consentStatus: finalConsentStatus,
+    decision,
+    decisionReason,
+    status: 'pending',
+    verifiedAttributes: Array.isArray(verifiedAttributes) && verifiedAttributes.length > 0
+      ? verifiedAttributes
+      : ['KYC Verified', 'Age >= 18 Valid (Groth16 ZKP)'],
+    protectedHiddenAttributes: Array.isArray(protectedHiddenAttributes) && protectedHiddenAttributes.length > 0
+      ? protectedHiddenAttributes
+      : ['Full DOB (Hidden)', 'Raw Aadhaar (Hidden)', 'Full Street Address (Hidden)'],
+  });
+
+  // Send real notification to customer
+  db.addNotification({
+    id: `notif-tx-${Date.now()}`,
+    userId,
+    title: 'Transaction Verification Required',
+    message: `${bankName} has requested a Live Transaction Identity Decision for ${serviceName}.`,
+    type: 'request',
+    timestamp: new Date().toISOString(),
+    read: false,
+  });
+
+  // Cryptographic audit log
+  db.addAuditLog({
+    id: `audit-${Date.now()}`,
+    timestamp: new Date().toISOString(),
+    event: 'LIVE_TRANSACTION_DECISION_REQUESTED',
+    actor: staff ? `${staff.name} (${staff.employeeId})` : 'Institutional Verification Engine',
+    organization: bankName,
+    action: `Initiated Live Transaction Verification for ${serviceName} with customer ${finalUserName} (${userId}). Decision: ${decision}.`,
+    txHash: blockchain.generateTxHash(),
+    status: 'confirmed',
+  });
+
+  return res.status(201).json(newDecision);
+});
+
+// Customer approves a Live Transaction Decision
+apiRouter.post('/live-transactions/:id/approve', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  const txItem = db.getLiveTransactionDecisionById(req.params.id);
+  if (!txItem) {
+    return res.status(404).json({ error: 'Transaction decision not found' });
+  }
+
+  // Generate zero-knowledge cryptographic proof anchoring
+  const proofResult = blockchain.generateZKProof({
+    userId: txItem.userId,
+    claimType: 'age_over_18',
+    userData: { age: 26, dob: '2000-01-01', addressState: 'Tamil Nadu', kycStatus: 'verified' },
+    verifier: txItem.bankName,
+  });
+
+  const updated = db.approveLiveTransactionDecision(req.params.id, proofResult.proofHash, proofResult.txHash);
+
+  // Send notification to customer
+  db.addNotification({
+    id: `notif-tx-appr-${Date.now()}`,
+    userId: txItem.userId,
+    title: 'Transaction Verification Approved',
+    message: `Zero-knowledge identity decision for ${txItem.serviceName} verified successfully with zero personal data leakage.`,
+    type: 'success',
+    timestamp: new Date().toISOString(),
+    read: false,
+  });
+
+  // Log on-chain audit event
+  db.addAuditLog({
+    id: `audit-${Date.now()}`,
+    timestamp: new Date().toISOString(),
+    event: 'LIVE_TRANSACTION_DECISION_APPROVED',
+    actor: user ? user.name : txItem.userName,
+    organization: 'TrustChain Sovereign Network',
+    action: `Customer approved Live Transaction Decision for ${txItem.serviceName}. Decision: ${txItem.decision}. Audit ref: ${txItem.auditRef}.`,
+    proofId: updated?.proofId,
+    txHash: proofResult.txHash,
+    status: 'confirmed',
+  });
+
+  return res.json({ success: true, transaction: updated });
+});
+
+// Customer rejects a Live Transaction Decision
+apiRouter.post('/live-transactions/:id/reject', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  const txItem = db.getLiveTransactionDecisionById(req.params.id);
+  if (!txItem) {
+    return res.status(404).json({ error: 'Transaction decision not found' });
+  }
+
+  const updated = db.rejectLiveTransactionDecision(req.params.id);
+
+  db.addAuditLog({
+    id: `audit-${Date.now()}`,
+    timestamp: new Date().toISOString(),
+    event: 'LIVE_TRANSACTION_DECISION_REJECTED',
+    actor: user ? user.name : txItem.userName,
+    organization: 'TrustChain Sovereign Network',
+    action: `Customer declined Live Transaction Verification for ${txItem.serviceName}. Audit ref: ${txItem.auditRef}.`,
+    txHash: blockchain.generateTxHash(),
+    status: 'confirmed',
+  });
+
+  return res.json({ success: true, transaction: updated });
 });

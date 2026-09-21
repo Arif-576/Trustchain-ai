@@ -15,7 +15,8 @@ import {
   FraudRadarMetrics,
   BankLedgerItem,
   SupportCase,
-  FraudAlert
+  FraudAlert,
+  LiveTransactionDecision
 } from '../types';
 
 class ApiService {
@@ -868,6 +869,34 @@ class ApiService {
     return this.request<{ success: boolean; alert: FraudAlert }>(`/api/bank/fraud-alerts/${id}/action`, {
       method: 'POST',
       body: JSON.stringify({ action, resolutionNotes }),
+    });
+  }
+
+  // Live Transaction Identity Decision
+  async getLiveTransactions(): Promise<LiveTransactionDecision[]> {
+    return this.request<LiveTransactionDecision[]>('/api/live-transactions');
+  }
+
+  async getLiveTransaction(id: string): Promise<LiveTransactionDecision> {
+    return this.request<LiveTransactionDecision>(`/api/live-transactions/${id}`);
+  }
+
+  async createLiveTransaction(payload: Partial<LiveTransactionDecision>): Promise<LiveTransactionDecision> {
+    return this.request<LiveTransactionDecision>('/api/live-transactions', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async approveLiveTransaction(id: string): Promise<{ success: boolean; transaction: LiveTransactionDecision }> {
+    return this.request<{ success: boolean; transaction: LiveTransactionDecision }>(`/api/live-transactions/${id}/approve`, {
+      method: 'POST',
+    });
+  }
+
+  async rejectLiveTransaction(id: string): Promise<{ success: boolean; transaction: LiveTransactionDecision }> {
+    return this.request<{ success: boolean; transaction: LiveTransactionDecision }>(`/api/live-transactions/${id}/reject`, {
+      method: 'POST',
     });
   }
 }

@@ -85,6 +85,9 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     tabLoans: 'Loans & Services',
     tabAudit: 'Audit History',
     tabNotifications: 'Notifications',
+    tabTransactionVerification: 'Transaction Verification',
+    transactionVerificationTitle: 'Transaction Verification',
+    liveTransactionVerificationTitle: 'Live Transaction Verification',
 
     // Identity Wallet
     verifiedIdentity: 'Verified Digital Identity',
@@ -214,6 +217,7 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     tabFraudRadar: 'Fraud Radar',
     tabRuralDesk: 'Rural Desk',
     tabLedger: 'Audit Ledger',
+    tabLiveTx: 'Live Transaction Verification',
     tabSettings: 'Settings',
     officerPortal: 'Officer Portal',
     officer: 'Officer',
@@ -617,6 +621,9 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     tabLoans: 'கடன்கள் & சேவைகள்',
     tabAudit: 'ஆடிட் வரலாறு',
     tabNotifications: 'அறிவிப்புகள்',
+    tabTransactionVerification: 'பரிவர்த்தனை சரிபார்ப்பு',
+    transactionVerificationTitle: 'பரிவர்த்தனை சரிபார்ப்பு',
+    liveTransactionVerificationTitle: 'நேரடி பரிவர்த்தனை சரிபார்ப்பு',
 
     verifiedIdentity: 'சரிபார்க்கப்பட்ட டிஜிட்டல் அடையாளம்',
     credentialId: 'சான்றறிக்கை எண்',
@@ -736,6 +743,7 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     tabFraudRadar: 'மோசடி ரேடார்',
     tabRuralDesk: 'கிராமிய மேசை',
     tabLedger: 'தணிக்கை லெட்ஜர்',
+    tabLiveTx: 'நேரடி பரிவர்த்தனை சரிபார்ப்பு',
     tabSettings: 'அமைப்புகள்',
     officerPortal: 'அதிகாரி போர்டல்',
     officer: 'அதிகாரி',
@@ -1137,6 +1145,9 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     tabLoans: 'ऋण और सेवाएं',
     tabAudit: 'ऑडिट इतिहास',
     tabNotifications: 'सूचनाएं',
+    tabTransactionVerification: 'लेनदेन सत्यापन',
+    transactionVerificationTitle: 'लेनदेन सत्यापन',
+    liveTransactionVerificationTitle: 'लाइव लेनदेन सत्यापन',
 
     verifiedIdentity: 'सत्यापित डिजिटल पहचान',
     credentialId: 'क्रेडेंशियल आईडी',
@@ -1256,6 +1267,7 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     tabFraudRadar: 'धोखाधड़ी रडार',
     tabRuralDesk: 'ग्रामीण सहायता',
     tabLedger: 'ऑडिट लेजर',
+    tabLiveTx: 'लाइव लेनदेन सत्यापन',
     tabSettings: 'सेटिंग्स',
     officerPortal: 'अधिकारी पोर्टल',
     officer: 'अधिकारी',

@@ -340,6 +340,19 @@ export const BottomNavigationBar: React.FC<BottomNavigationBarProps> = ({
 
                   <button
                     onClick={() => {
+                      onCustomerTabChange?.('tx_verification');
+                      setIsMoreMenuOpen(false);
+                    }}
+                    className={`w-full min-h-[44px] flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-left transition-colors cursor-pointer ${
+                      activeCustomerTab === 'tx_verification' ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span className="truncate">Transaction Verification</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
                       onCustomerTabChange?.('loans');
                       setIsMoreMenuOpen(false);
                     }}
@@ -464,6 +477,19 @@ export const BottomNavigationBar: React.FC<BottomNavigationBarProps> = ({
                   >
                     <History className="w-4 h-4 text-indigo-600 shrink-0" />
                     <span className="truncate">{t('ledgerExplorerHeader')}</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onBankTabChange?.('live_tx');
+                      setIsMoreMenuOpen(false);
+                    }}
+                    className={`w-full min-h-[44px] flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-left transition-colors cursor-pointer ${
+                      activeBankTab === 'live_tx' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <span className="truncate">Live Transaction Verification</span>
                   </button>
 
                   <button

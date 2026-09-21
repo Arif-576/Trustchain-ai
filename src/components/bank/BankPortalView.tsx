@@ -49,6 +49,7 @@ import { BankAssistedDeskTab } from './BankAssistedDeskTab';
 import { BankCustomerSupportTab } from './BankCustomerSupportTab';
 import { BankCustomersDirectoryTab } from './BankCustomersDirectoryTab';
 import { BankSettingsTab } from './BankSettingsTab';
+import { LiveTransactionVerificationTab } from './LiveTransactionVerificationTab';
 import { PageVoiceGuideBanner } from '../common/PageVoiceGuideBanner';
 import { getPageVoiceGuide } from '../../voice/pageVoiceGuides';
 
@@ -68,6 +69,7 @@ export type BankTabType =
   | 'loans'
   | 'assisted'
   | 'ledger'
+  | 'live_tx'
   | 'settings';
 
 export const normalizeBankTab = (tab: string | undefined): BankTabType => {
@@ -76,7 +78,8 @@ export const normalizeBankTab = (tab: string | undefined): BankTabType => {
   if (tab === 'radar' || tab === 'fraud_radar') return 'fraud_radar';
   if (tab === 'rural' || tab === 'assisted') return 'assisted';
   if (tab === 'blockchain' || tab === 'ledger') return 'ledger';
-  if (['overview', 'customers', 'support', 'loans', 'settings'].includes(tab)) {
+  if (tab === 'live_tx' || tab === 'live-tx' || tab === 'live_transaction') return 'live_tx';
+  if (['overview', 'customers', 'support', 'loans', 'live_tx', 'settings'].includes(tab)) {
     return tab as BankTabType;
   }
   return 'overview';
@@ -549,6 +552,20 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
           >
             <Database className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
             <span>{t('tabLedger')}</span>
+          </button>
+
+          <button
+            id="bank-tab-live-tx-btn"
+            type="button"
+            onClick={() => switchPortalTab('live_tx')}
+            className={`shrink-0 snap-start flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs md:text-sm font-semibold sm:font-bold transition-all cursor-pointer whitespace-nowrap ${
+              activePortalTab === 'live_tx'
+                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                : 'bg-white text-slate-600 hover:bg-slate-100/80 border border-slate-200/80 hover:text-slate-900'
+            }`}
+          >
+            <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
+            <span>{t('tabLiveTx') || 'Live Transaction Verification'}</span>
           </button>
 
           <button
@@ -1263,6 +1280,11 @@ export const BankPortalView: React.FC<BankPortalViewProps> = ({
       {/* TAB 7: BLOCKCHAIN AUDIT LEDGER */}
       {/* ========================================================================= */}
       {activePortalTab === 'ledger' && <BankBlockchainLedgerTab />}
+
+      {/* ========================================================================= */}
+      {/* TAB 7.5: LIVE TRANSACTION IDENTITY DECISION */}
+      {/* ========================================================================= */}
+      {activePortalTab === 'live_tx' && <LiveTransactionVerificationTab staff={staff} />}
 
       {/* ========================================================================= */}
       {/* TAB 8: SETTINGS & NODE PROFILE */}

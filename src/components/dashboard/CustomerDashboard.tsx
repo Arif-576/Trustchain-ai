@@ -12,7 +12,8 @@ import {
   History,
   Bell,
   RefreshCw,
-  Settings
+  Settings,
+  CheckCheck
 } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { useVoice } from '../../voice/VoiceContext';
@@ -31,6 +32,7 @@ import { LoansTab } from './LoansTab';
 import { AuditHistoryTab } from './AuditHistoryTab';
 import { NotificationsTab } from './NotificationsTab';
 import { CustomerSettingsTab } from './CustomerSettingsTab';
+import { TransactionVerificationTab } from './TransactionVerificationTab';
 import { EasyModeCitizenHub } from './EasyModeCitizenHub';
 import { useEasyMode } from '../../context/EasyModeContext';
 import { PageVoiceGuideBanner } from '../common/PageVoiceGuideBanner';
@@ -257,6 +259,11 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
     },
     { id: 'qr', label: t('qrVerificationTitle'), icon: QrCode },
     { id: 'consent', label: t('consentCenterTitle'), icon: FileCheck2 },
+    {
+      id: 'tx_verification',
+      label: t('transactionVerificationTitle') || 'Transaction Verification',
+      icon: CheckCheck,
+    },
     { id: 'loans', label: t('loansTitle'), icon: Banknote },
     { id: 'audit', label: t('auditHistoryTitle'), icon: History },
     {
@@ -414,6 +421,13 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
           <ConsentTab
             consents={consents || []}
             onConsentUpdated={loadData}
+          />
+        )}
+
+        {activeTab === 'tx_verification' && (
+          <TransactionVerificationTab
+            user={user}
+            onNavigateToTab={switchTab}
           />
         )}
 

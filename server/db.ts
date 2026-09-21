@@ -15,7 +15,9 @@ import {
   BiometricPasskey,
   BankDisbursalRecord,
   SupportCase,
-  FraudAlert
+  FraudAlert,
+  LiveTransactionDecision,
+  TransactionDecisionOutcome
 } from '../src/types';
 import { blockchain } from './blockchain';
 
@@ -36,6 +38,7 @@ interface DBData {
   bankResetCodes: { bankId: string; employeeId: string; code: string; expiresAt: number }[];
   supportCases: SupportCase[];
   fraudAlerts: FraudAlert[];
+  liveTransactionDecisions: LiveTransactionDecision[];
 }
 
 const DB_DIR = path.join(process.cwd(), 'data');
@@ -687,6 +690,159 @@ function getInitialData(): DBData {
     },
   ];
 
+  const liveTransactionDecisions: LiveTransactionDecision[] = [
+    {
+      id: 'tx-dec-01',
+      userId: 'usr-midhun-01',
+      userName: 'Midhun',
+      bankId: 'bank-sbi',
+      bankName: 'State Bank of India (SBI)',
+      serviceType: 'loan',
+      serviceName: 'CBDC Priority MSME Loan Approval',
+      serviceReason: 'Underwrite ₹5,00,000 credit facility eligibility with zero leakage.',
+      dataRequested: ['KYC Verified Status', 'Age >= 18 Confirmation', 'Employment / Business Category', 'Income Bracket Tier'],
+      minimumDataToProve: ['✓ Cryptographic e-KYC Validity', '✓ ZK Age Predicate (Age >= 18)', '✓ Certified Tier-1 Business Registration'],
+      notExposed: ['Full Date of Birth', 'Raw Aadhaar & PAN Numbers', 'Full Residential Street Address', 'Raw Bank Account / Tax Statements'],
+      privacyImpact: 'Low',
+      trustAIRisk: 'Low',
+      credentialStatus: 'Active',
+      consentStatus: 'Valid',
+      decision: 'ALLOW',
+      decisionReason: 'All required verification conditions are satisfied with zero over-disclosure.',
+      status: 'pending',
+      verifiedAttributes: ['KYC Verified (UIDAI e-Sign Active)', 'Age >= 18 Valid (Groth16 ZKP)', 'Business MSME Tier-1 Validated'],
+      protectedHiddenAttributes: ['DOB: 12/04/1996 (Hidden)', 'Aadhaar: **** **** 4892 (Hidden)', 'Address: Flat 402, Anna Nagar (Hidden)', 'Salary: ₹1,20,000/mo (Hidden)'],
+      timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+      auditRef: 'TX-DEC-SBI-9021',
+    },
+    {
+      id: 'tx-dec-02',
+      userId: 'usr-midhun-01',
+      userName: 'Midhun',
+      bankId: 'bank-icici',
+      bankName: 'ICICI Commercial Trust Banking',
+      serviceType: 'account_opening',
+      serviceName: 'Sovereign High-Yield Savings Account Opening',
+      serviceReason: 'Comply with RBI Master Direction on instant digital onboarding without retaining paper photocopies.',
+      dataRequested: ['Active Indian Resident KYC', 'Age above 18', 'State of Residence (Tamil Nadu)'],
+      minimumDataToProve: ['✓ Valid Aadhaar KYC without raw UID', '✓ ZK Age Verification', '✓ State Territory Jurisdictional Match'],
+      notExposed: ['Full Aadhaar Number', 'Complete Date of Birth', 'Exact House Address', 'Raw Identity Documents'],
+      privacyImpact: 'Low',
+      trustAIRisk: 'Low',
+      credentialStatus: 'Active',
+      consentStatus: 'Valid',
+      decision: 'ALLOW',
+      decisionReason: 'All required verification conditions are satisfied.',
+      status: 'approved',
+      verifiedAttributes: ['KYC Verified', 'Age > 18 Verified', 'State: Tamil Nadu Confirmed'],
+      protectedHiddenAttributes: ['Raw Aadhaar Number (Hidden)', 'Full DOB (Hidden)', 'House / Street Address (Hidden)'],
+      proofId: 'zkp-tx-icici-441',
+      proofHash: '0xzk9811abef90341762cba10928e441',
+      txHash: '0x78a1bc920419283eac091823019ab92',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      auditRef: 'TX-DEC-ICICI-8102',
+    },
+    {
+      id: 'tx-dec-03',
+      userId: 'usr-arif-02',
+      userName: 'Mohamed Arif A',
+      bankId: 'bank-sbi',
+      bankName: 'State Bank of India (SBI)',
+      serviceType: 'loan',
+      serviceName: 'Kisan Zero-Disclosure Agricultural Credit',
+      serviceReason: 'Assess seasonal credit eligibility and territorial landholder identity without exposing identity papers.',
+      dataRequested: ['KYC Verified Status', 'Age above 18', 'State Territory Jurisdictional Match'],
+      minimumDataToProve: ['✓ Active Sovereign KYC', '✓ ZK Age Predicate >= 18', '✓ Sovereign Citizen Jurisdiction Confirmed'],
+      notExposed: ['Full Date of Birth', 'Raw Aadhaar Number', 'Full Street Address', 'Personal Medical History'],
+      privacyImpact: 'Low',
+      trustAIRisk: 'Low',
+      credentialStatus: 'Active',
+      consentStatus: 'Valid',
+      decision: 'ALLOW',
+      decisionReason: 'All required verification conditions are satisfied.',
+      status: 'pending',
+      verifiedAttributes: ['KYC Verified', 'Age >= 18 Valid', 'Tamil Nadu Residency Verified'],
+      protectedHiddenAttributes: ['DOB: 15/08/1995 (Hidden)', 'Aadhaar: **** **** 1290 (Hidden)', 'Full Street Address (Hidden)'],
+      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+      auditRef: 'TX-DEC-SBI-9914',
+    },
+    {
+      id: 'tx-dec-04',
+      userId: 'usr-priya-05',
+      userName: 'Priya Sharma',
+      bankId: 'bank-hdfc',
+      bankName: 'HDFC Trust Banking',
+      serviceType: 'insurance',
+      serviceName: 'Arogya Sanjeevani Health Insurance Disbursal',
+      serviceReason: 'Verify policyholder eligibility and active identity standing prior to cashless claim settlement.',
+      dataRequested: ['UIDAI KYC Verification', 'Age Bracket Validation (18-65)', 'Nominee Standing'],
+      minimumDataToProve: ['✓ Active Sovereign KYC', '✓ Age within 18-65 policy range'],
+      notExposed: ['Complete Medical Records', 'Raw Aadhaar Card', 'Permanent Address'],
+      privacyImpact: 'Medium',
+      trustAIRisk: 'Low',
+      credentialStatus: 'Active',
+      consentStatus: 'Valid',
+      decision: 'ALLOW',
+      decisionReason: 'All required verification conditions are satisfied.',
+      status: 'approved',
+      verifiedAttributes: ['KYC Verified', 'Age Range 18-65 Verified'],
+      protectedHiddenAttributes: ['Raw Aadhaar Number (Hidden)', 'Full DOB (Hidden)', 'Complete Medical History (Hidden)'],
+      proofId: 'zkp-tx-hdfc-3091',
+      proofHash: '0xzk7841bc90aef4316d28905b7610fa789c',
+      txHash: '0x7782bf7a83d09e3a7c6419d854e76a0b91d84f',
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+      auditRef: 'TX-DEC-HDFC-3091',
+    },
+    {
+      id: 'tx-dec-05',
+      userId: 'usr-kishore-03',
+      userName: 'Kishore',
+      bankId: 'bank-sbi',
+      bankName: 'State Bank of India (SBI)',
+      serviceType: 'passport',
+      serviceName: 'MEA Sovereign Passport Clearance Fast-Track',
+      serviceReason: 'Expedited territorial verification for international travel clearance.',
+      dataRequested: ['National Citizenship KYC', 'No Active Revocation Flag', 'Biometric Attestation'],
+      minimumDataToProve: ['✓ Sovereign Indian Citizenship Attestation', '✓ Non-Revoked Credential Status'],
+      notExposed: ['Raw Biometric Scans', 'Full Address History', 'Parent Particulars'],
+      privacyImpact: 'Medium',
+      trustAIRisk: 'Medium',
+      credentialStatus: 'Active',
+      consentStatus: 'Valid',
+      decision: 'EXTRA_VERIFICATION',
+      decisionReason: 'Additional verification is required due to cross-border travel clearance tier.',
+      status: 'pending',
+      verifiedAttributes: ['Citizenship Verified', 'Active Credential Confirmed'],
+      protectedHiddenAttributes: ['Raw Biometrics (Hidden)', 'Full Address History (Hidden)'],
+      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      auditRef: 'TX-DEC-SBI-7721',
+    },
+    {
+      id: 'tx-dec-06',
+      userId: 'usr-krishnesh-04',
+      userName: 'Krishnesh',
+      bankId: 'bank-axis',
+      bankName: 'Axis Bank Institutional Services',
+      serviceType: 'high_value_transfer',
+      serviceName: 'Outward Inter-Bank Sovereign Remittance (> ₹10,00,000)',
+      serviceReason: 'Real-time AML anti-impersonation and high-value wire authorization check.',
+      dataRequested: ['Account Ownership Proof', 'Active Biometric Passkey Binding', 'Consent Timestamp < 5 mins'],
+      minimumDataToProve: ['✓ ZK Proof of Account Key Ownership', '✓ Valid Device Secure Enclave Attestation'],
+      notExposed: ['Net Worth / Total Holdings', 'Account Nominee Details', 'Raw Device Hardware Serial'],
+      privacyImpact: 'High',
+      trustAIRisk: 'High',
+      credentialStatus: 'Active',
+      consentStatus: 'Expired',
+      decision: 'BLOCK',
+      decisionReason: 'Proof, credential, consent, or security condition is invalid: Consent is expired and high threat score flagged.',
+      status: 'rejected',
+      verifiedAttributes: ['Account Ownership Proof (Blocked)'],
+      protectedHiddenAttributes: ['Net Worth (Hidden)', 'Nominee Details (Hidden)', 'Device Hardware Serial (Hidden)'],
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      auditRef: 'TX-DEC-AXIS-9901',
+    },
+  ];
+
   return {
     users,
     bankStaff,
@@ -704,6 +860,7 @@ function getInitialData(): DBData {
     bankResetCodes,
     supportCases,
     fraudAlerts,
+    liveTransactionDecisions,
   };
 }
 
@@ -732,6 +889,7 @@ class Database {
         parsed.bankResetCodes = parsed.bankResetCodes || [];
         parsed.supportCases = (parsed.supportCases && parsed.supportCases.length > 0) ? parsed.supportCases : initial.supportCases;
         parsed.fraudAlerts = (parsed.fraudAlerts && parsed.fraudAlerts.length > 0) ? parsed.fraudAlerts : initial.fraudAlerts;
+        parsed.liveTransactionDecisions = (parsed.liveTransactionDecisions && parsed.liveTransactionDecisions.length > 0) ? parsed.liveTransactionDecisions : initial.liveTransactionDecisions;
 
         parsed.qrTokens = parsed.qrTokens || [];
         initial.qrTokens.forEach((qt: any) => {
@@ -1549,6 +1707,54 @@ class Database {
     if (resolutionNotes) alert.resolutionNotes = resolutionNotes;
     this.persist();
     return alert;
+  }
+
+  // Live Transaction Identity Decision Engine
+  public getLiveTransactionDecisionsForUser(userId: string): LiveTransactionDecision[] {
+    return (this.data.liveTransactionDecisions || []).filter(t => t.userId === userId);
+  }
+
+  public getAllLiveTransactionDecisions(): LiveTransactionDecision[] {
+    return this.data.liveTransactionDecisions || [];
+  }
+
+  public getLiveTransactionDecisionById(id: string): LiveTransactionDecision | undefined {
+    return (this.data.liveTransactionDecisions || []).find(t => t.id === id);
+  }
+
+  public createLiveTransactionDecision(item: Omit<LiveTransactionDecision, 'id' | 'timestamp' | 'auditRef'>): LiveTransactionDecision {
+    const newDecision: LiveTransactionDecision = {
+      ...item,
+      id: `tx-dec-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      timestamp: new Date().toISOString(),
+      auditRef: `TX-DEC-${(item.bankId || 'INST').toUpperCase().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`,
+    };
+
+    if (!this.data.liveTransactionDecisions) {
+      this.data.liveTransactionDecisions = [];
+    }
+    this.data.liveTransactionDecisions.unshift(newDecision);
+    this.persist();
+    return newDecision;
+  }
+
+  public approveLiveTransactionDecision(id: string, proofHash?: string, txHash?: string): LiveTransactionDecision | null {
+    const item = (this.data.liveTransactionDecisions || []).find(t => t.id === id);
+    if (!item) return null;
+    item.status = 'approved';
+    if (proofHash) item.proofHash = proofHash;
+    if (txHash) item.txHash = txHash;
+    item.proofId = item.proofId || `zkp-tx-${Date.now()}`;
+    this.persist();
+    return item;
+  }
+
+  public rejectLiveTransactionDecision(id: string): LiveTransactionDecision | null {
+    const item = (this.data.liveTransactionDecisions || []).find(t => t.id === id);
+    if (!item) return null;
+    item.status = 'rejected';
+    this.persist();
+    return item;
   }
 }
 
